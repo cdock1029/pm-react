@@ -19,3 +19,4 @@
 Thumbs.db
 /coverage/*
 /bower_components
+/build
