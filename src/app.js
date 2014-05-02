@@ -1,12 +1,23 @@
 /** @jsx React.DOM */
+var buildings = [
+  {id:"1", name:"2200 Westlake",address:"900 Lenora St.",city:"Seattle",state:"WA",zip:"98121"},
+  {id:"2", name:"Phase 5",address:"25 Main St",city:"Austin",state:"TX",zip:"79703"},
+  {id:"3", name:"Amzn",address:"123 Boren Ave.",city:"Seattle",state:"WA",zip:"98121"}
+];
+
 var BuildingTable = React.createClass({
   render: function() {
+    var rows = [];
+    this.props.buildings.forEach(function(building) {
+      rows.push(<BuildingRow building={building} key={building.id}/>);
+    });
+
     return (
-      <div className="commentBox">
-        <div class="page-header">
+      <div className="building-table">
+        <div className="page-header">
           <h1>Buildings</h1>
         </div>
-            <table class="table table-hover">
+          <table className="table table-hover">
                 <thead>
                     <tr>
                         <th>Name</th>
@@ -16,47 +27,28 @@ var BuildingTable = React.createClass({
                         <th>Zip</th>
                     </tr>
                 </thead>
-                <tbody>
-                {{#each model}}
-                    <tr>
-                        <td>{{#link-to 'building' this}}{{name}}{{/link-to}}</td>
-                        <td>{{address}}</td>
-                        <td>{{city}}</td>
-                        <td>{{state}}</td>
-                        <td>{{zip}}</td>
-                    </tr>
-                {{/each}}
-                </tbody>
+                <tbody>{rows}</tbody>
             </table>
-        <h1>Comments</h1>
-        <CommentList />
-        <CommentForm />
       </div>
     );
   }
 });
 
-var CommentList = React.createClass({
+var BuildingRow = React.createClass({
   render: function() {
     return (
-      <div className="commentList">
-          I am a comment list.
-      </div>
-    );
-  }
-});
-
-var CommentForm = React.createClass({
-  render: function() {
-    return (
-      <div className="commentForm">
-        Hello, world! I am a comment form.
-      </div>
+      <tr>
+        <td>{this.props.building.name}</td>
+        <td>{this.props.building.address}</td>
+        <td>{this.props.building.city}</td>
+        <td>{this.props.building.state}</td>
+        <td>{this.props.building.zip}</td>
+      </tr>
     );
   }
 });
 
 React.renderComponent(
-  <CommentBox />,
+  <BuildingTable buildings={buildings} />,
   document.getElementById('content')
 );
