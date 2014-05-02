@@ -1,0 +1,11 @@
+{
+  "name": "pm-react",
+  "description": "fb react app",
+  "private": true,
+  "version": "0.0.0",
+  "devDependencies": {
+    "mocha": "*",
+    "grunt-bower-install": "^1.4.1",
+    "grunt": "^0.4.4"
+  }
+}
