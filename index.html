@@ -9,15 +9,21 @@
 		<link rel="stylesheet" href="styles/base.css" />
 	</head>
 	<body>
-		<div id="content"></div>
+		<div id="content" class="container"></div>
 
 
 		<!-- bower:js -->
 		<script src="bower_components/jquery/dist/jquery.js"></script>
 		<script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+		<script src="bower_components/underscore/underscore.js"></script>
+		<script src="bower_components/backbone/backbone.js"></script>
 		<!-- endbower -->
+
 		<script src="bower_components/react/react-with-addons.js"></script>
-		<script src="bower_components/director/build/director.js"></script>
-		<script src="build/app.js"></script>
+		<script src="bower_components/react/JSXTransformer.js"></script>
+
+		<script src="src/utils.js"></script>
+		<script src="src/model.js"></script>
+		<script type="text/jsx" src="src/app.jsx"></script>
 	</body>
 </html>
