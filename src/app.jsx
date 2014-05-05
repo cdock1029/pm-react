@@ -114,6 +114,7 @@ var app = app || {};
             for (var i = 1; i <= this.props.numberOfPages; i++) {
                 var button;
                 if (this.props.currentPage === i) {
+                    //don't add the callback to "current page" button. We're on it already
                     button = <PageButton pageNumber={i} label={i} key={i} />;
                 } else {
                     button = <PageButton pageNumber={i} label={i} updatePageCallback={this.props.updatePageCallback} key={i} />;
@@ -121,13 +122,13 @@ var app = app || {};
                 pageNumberButtons.push(button);
             }
             var nextButton, previousButton;
-            //We're on the LAST page
+            //We're on the LAST page, disable "next"
             if (this.props.currentPage === this.props.numberOfPages) {
                 nextButton = <PageButton iconClasses={'glyphicon glyphicon-chevron-right'} />;
             } else {
                 nextButton = <PageButton iconClasses={'glyphicon glyphicon-chevron-right'} updatePageCallback={this.props.updatePageCallback} pageNumber={this.props.currentPage + 1}  />;
             }
-            //We're on the FIRST page
+            //We're on the FIRST page, disable "previous"
             if (this.props.currentPage === 1) {
                 previousButton = <PageButton iconClasses={'glyphicon glyphicon-chevron-left'} />;
             } else {
@@ -147,19 +148,6 @@ var app = app || {};
      * Defines a specific pagination button, one of: Next, previous, and numbered page.
      */
     var PageButton = React.createClass({
-        /*render: function () {
-            var pageButton;
-            if (this.props.updatePageCallback) {
-                if (this.props.isCurrent) {
-                    pageButton = <li className="active"><span>{this.props.label}</span></li>;
-                } else {
-                    pageButton = <li><span onClick={this.props.updatePageCallback.bind(null, this.props.pageNumber, null)}>{this.props.label}</span></li>;
-                }
-            } else {
-                pageButton = <li className="disabled"><span>{this.props.label}</span></li>;
-            }
-            return pageButton;
-        }*/
         render: function () {
             var pageButton;
             //Next/Previous Buttons
@@ -182,24 +170,7 @@ var app = app || {};
                 }
             }
             return pageButton;
-
-/*
-            // if (this.props.updatePageCallback) {
-            //     if (this.props.iconClasses) {
-            //         pageButton = <li><span className={this.props.iconClasses} onClick={this.props.updatePageCallback.bind(null, this.props.pageNumber, null)}></span></li>;
-            //     } else {
-            //         pageButton = <li><span onClick={this.props.updatePageCallback.bind(null, this.props.pageNumber, null)}>{this.props.label}</span></li>;
-            //     }
-            // } else {
-            //     if (this.props.iconClasses) {
-            //         pageButton = <li className="disabled"><span>{this.props.label}</span></li>;
-            //     } else {
-            //         pageButton = <li className="active"><span>{this.props.label}</span></li>;
-            //     }
-            // }
-            // return pageButton; */
         }
-
     });
 
     /**
@@ -232,6 +203,7 @@ var app = app || {};
                 );
                 break;
             default:
+                //TODO do this the right way, not sure
                 return <h1>404 Not Found</h1>;
                 break;
             }
