@@ -1,3 +1,15 @@
 th {
-  cursor: pointer;
+    cursor: pointer;
+}
+
+.pagination > li {
+    cursor: pointer;
+}
+
+.pagination > .disabled {
+    cursor: initial;
+}
+
+.pagination > li > .glyphicon {
+    top: 0px;
 }
