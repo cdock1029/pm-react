@@ -31,14 +31,18 @@ var app = app || {};
             this.setState({ sortField: sortField, currentPageNumber: pageNumber, sortDirection: sortDirection });
         },
         render: function () {
-            var page = app.getPageData(this.props.modelType, this.state.sortField, this.state.sortDirection, this.state.currentPageNumber, this.props.countPerPage);
-            var numberOfPages = Math.ceil(page.totalCount / this.props.countPerPage);
-            return (
-                <div>
-                    <DataTable data={page.data} dataColumns={this.props.dataColumns} updatePageCallback={this.updatePage} tableHeading={this.props.modelType} sortField={this.state.sortField} sortDirection={this.state.sortDirection} />
-                    <Pagination numberOfPages={numberOfPages} currentPage={this.state.currentPageNumber} updatePageCallback={this.updatePage} />
-                </div>
-            );
+            var pagePromise = app.getPageData(this.props.modelType, this.state.sortField, this.state.sortDirection, this.state.currentPageNumber, this.props.countPerPage);
+            pagePromise.then(function (page) {
+                debugger;
+                var numberOfPages = Math.ceil(page.length / this.props.countPerPage);
+                return (
+                    <div>
+                        <DataTable data={page} dataColumns={this.props.dataColumns} updatePageCallback={this.updatePage} tableHeading={this.props.modelType} sortField={this.state.sortField} sortDirection={this.state.sortDirection} />
+                        <Pagination numberOfPages={numberOfPages} currentPage={this.state.currentPageNumber} updatePageCallback={this.updatePage} />
+                    </div>
+                );
+            }.bind(this));
+
         }
     });
 
@@ -226,11 +230,10 @@ var app = app || {};
         }
     });
 
-    var model = app.model;
     var router = new Router();
 
     React.renderComponent(
-        <AppInterface router={router} model={model} />,
+        <AppInterface router={router}  />,
         document.getElementById('content')
     );
 

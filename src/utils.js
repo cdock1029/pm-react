@@ -3,10 +3,9 @@ var app = app || {};
 (function () {
 	'use strict';
 
-	app.Utils = {
-        store: function () {
+    Parse.initialize(app.Parse.applicationId, app.Parse.javaScriptKey);
 
-        },
+	app.Utils = {
         capitalize: function (str) {
             return str.charAt(0).toUpperCase() + str.slice(1);
         }
@@ -17,21 +16,20 @@ var app = app || {};
 
     app.getPageData = function (modelType, sortField, sortDirection, pageNumber, countPerPage) {
         var start = (pageNumber - 1) * countPerPage;
-        console.log("start index: " + start);
-        var stringSort = function (str) {
-            return function(a, b) {
-                if (a[str] > b[str]) {
-                    return sortDirection ? 1 : -1;
-                }
-                if (a[str] < b[str]) {
-                    return sortDirection ? -1 : 1;
-                }
-                return 0;
-            };
-        };
-        var raw = app.model[modelType];
-        raw.sort(stringSort(sortField));
-        return { data: raw.slice(start, start + countPerPage), totalCount: raw.length };
+
+        var Model = Parse.Object.extend('Building');//(modelType);
+
+        var query = new Parse.Query(Model);
+        query.limit(countPerPage);
+        query.skip(start);
+
+        if (sortDirection) {
+            query.ascending(sortField);
+        } else {
+            query.descending(sortField);
+        }
+
+        return query.find();
     };
 
 })();

@@ -20,3 +20,4 @@ Thumbs.db
 /coverage/*
 /bower_components
 /build
+src/parseCredentials.js
