@@ -13,11 +13,22 @@ var app = app || {};
      */
     var DataGrid = React.createClass({
         getInitialState: function () {
+            console.log("in get initial state.");
             return {
                 sortField: 'id',
                 sortDirection: app.ASCENDING,
-                currentPageNumber: 1
+                currentPageNumber: 1,
+                page:[]
             };
+        },
+        componentDidMount: function () {
+            console.log("in component will mount.");
+            var pagePromise = app.getPageData(this.props.modelType, this.state.sortField, this.state.sortDirection, this.state.currentPageNumber, this.props.countPerPage);
+            pagePromise.then(function (page) {
+                console.log("inside pagePromise.then");
+                window.PageObj = page;
+                this.setState({ sortField: 'id', sortDirection: app.ASCENDING, currentPageNumber: 1, page: page });
+            }.bind(this));
         },
         updatePage: function(pageNumber, sortField) {
             var sortDirection = this.state.sortDirection;
@@ -31,17 +42,14 @@ var app = app || {};
             this.setState({ sortField: sortField, currentPageNumber: pageNumber, sortDirection: sortDirection });
         },
         render: function () {
-            var pagePromise = app.getPageData(this.props.modelType, this.state.sortField, this.state.sortDirection, this.state.currentPageNumber, this.props.countPerPage);
-            pagePromise.then(function (page) {
-                debugger;
-                var numberOfPages = Math.ceil(page.length / this.props.countPerPage);
+                console.log("in render.");
+                var numberOfPages = Math.ceil(this.state.page.length / this.props.countPerPage);
                 return (
                     <div>
-                        <DataTable data={page} dataColumns={this.props.dataColumns} updatePageCallback={this.updatePage} tableHeading={this.props.modelType} sortField={this.state.sortField} sortDirection={this.state.sortDirection} />
+                        <DataTable data={this.state.page} dataColumns={this.props.dataColumns} updatePageCallback={this.updatePage} tableHeading={this.props.modelType} sortField={this.state.sortField} sortDirection={this.state.sortDirection} />
                         <Pagination numberOfPages={numberOfPages} currentPage={this.state.currentPageNumber} updatePageCallback={this.updatePage} />
                     </div>
                 );
-            }.bind(this));
 
         }
     });
@@ -54,7 +62,16 @@ var app = app || {};
         var headers = [];
         var rows = [];
         this.props.data.forEach(function(row) {
-          rows.push(<DataRow row={row} key={row.id} />);
+            //TODO temporary hack to get working
+            var atts = row.attributes;
+            var obj = { id: row.id };
+            for (var key in atts) {
+                if (atts.hasOwnProperty(key)) {
+                    console.log("key: " + key + ", val: " + atts[key]);
+                    obj[key] = atts[key];
+                }
+            }
+            rows.push(<DataRow row={obj} key={obj.id} />);
         });
         this.props.dataColumns.forEach(function (column) {
             var sortLabel;
