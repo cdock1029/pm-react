@@ -18,17 +18,25 @@ var app = app || {};
                 sortField: 'id',
                 sortDirection: app.ASCENDING,
                 currentPageNumber: 1,
-                page:[]
+                page:[],
+                count: 0
             };
         },
-        componentDidMount: function () {
-            console.log("in component will mount.");
-            var pagePromise = app.getPageData(this.props.modelType, this.state.sortField, this.state.sortDirection, this.state.currentPageNumber, this.props.countPerPage);
-            pagePromise.then(function (page) {
+        stateSetter: function(pageNumber, sortField, sortDirection, shouldGetCount) {
+            var pagePromise = app.getBuildingsData(sortField, sortDirection, pageNumber, shouldGetCount);
+            pagePromise.then(function (page, count) {
+                if (typeof count === 'undefined') {
+                    console.log("count was undefined");
+                    count = this.state.count;
+                }
+                window.pageObj = page;
                 console.log("inside pagePromise.then");
-                window.PageObj = page;
-                this.setState({ sortField: 'id', sortDirection: app.ASCENDING, currentPageNumber: 1, page: page });
+                this.setState({ sortField: sortField, sortDirection: sortDirection, currentPageNumber: pageNumber, page: page, count: count });
             }.bind(this));
+        },
+        componentDidMount: function () {
+            console.log("in component did mount.");
+            this.stateSetter(1, 'id', app.ASCENDING, true);
         },
         updatePage: function(pageNumber, sortField) {
             var sortDirection = this.state.sortDirection;
@@ -39,11 +47,12 @@ var app = app || {};
             } else {
                 sortDirection = app.ASCENDING;
             }
-            this.setState({ sortField: sortField, currentPageNumber: pageNumber, sortDirection: sortDirection });
+            this.stateSetter(pageNumber, sortField, sortDirection, false);
         },
         render: function () {
                 console.log("in render.");
-                var numberOfPages = Math.ceil(this.state.page.length / this.props.countPerPage);
+                var numberOfPages = Math.ceil(this.state.count / app.COUNT_PER_PAGE);
+                console.log("page length: " + this.state.count + ", count per page: " + app.COUNT_PER_PAGE + ", number of pages: " + numberOfPages);
                 return (
                     <div>
                         <DataTable data={this.state.page} dataColumns={this.props.dataColumns} updatePageCallback={this.updatePage} tableHeading={this.props.modelType} sortField={this.state.sortField} sortDirection={this.state.sortDirection} />
@@ -212,14 +221,14 @@ var app = app || {};
             case 'buildings':
                 return (
                     <div>
-                    <DataGrid modelType={'buildings'} countPerPage={2} dataColumns={['name', 'address', 'city', 'state', 'zip']}/>
+                    <DataGrid modelType={'buildings'} dataColumns={['name', 'address', 'city', 'state', 'zip']}/>
                     </div>
                 );
                 break;
             case 'tenants':
                 return (
                     <div>
-                    <DataGrid modelType={'tenants'} countPerPage={3} dataColumns={['name', 'phone', 'email', 'balance']} />
+                    <DataGrid modelType={'tenants'} dataColumns={['name', 'phone', 'email', 'balance']} />
                     </div>
                 );
                 break;

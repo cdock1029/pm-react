@@ -13,14 +13,25 @@ var app = app || {};
 
     app.ASCENDING = true;
     app.DESCENDING = false;
+    app.COUNT_PER_PAGE = 2;
 
-    app.getPageData = function (modelType, sortField, sortDirection, pageNumber, countPerPage) {
-        var start = (pageNumber - 1) * countPerPage;
+    var getCount = function(model) {
+        console.log("inside getcount function");
+        var query = new Parse.Query(model);
+        return query.count();
+    };
 
+    app.getBuildingsData = function (sortField, sortDirection, pageNumber, shouldGetCount) {
         var Model = Parse.Object.extend('Building');//(modelType);
+        var count, result;
+        if (shouldGetCount) {
+            count = getCount(Model);
+        }
+
+        var start = (pageNumber - 1) * app.COUNT_PER_PAGE;
 
         var query = new Parse.Query(Model);
-        query.limit(countPerPage);
+        query.limit(app.COUNT_PER_PAGE);
         query.skip(start);
 
         if (sortDirection) {
@@ -28,7 +39,10 @@ var app = app || {};
         } else {
             query.descending(sortField);
         }
-
+        if (shouldGetCount && count) {
+            console.log("returning when promise");
+            return Parse.Promise.when(query.find(), count);
+        }
         return query.find();
     };
 
