@@ -21,8 +21,8 @@ var app = app || {};
         return query.count();
     };
 
-    app.getBuildingsData = function (sortField, sortDirection, pageNumber, shouldGetCount) {
-        var Model = Parse.Object.extend('Building');//(modelType);
+    app.getData = function (modelType, sortField, sortDirection, pageNumber, shouldGetCount) {
+        var Model = Parse.Object.extend(modelType);//(modelType);
         var count, result;
         if (shouldGetCount) {
             count = getCount(Model);

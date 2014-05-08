@@ -23,7 +23,7 @@ var app = app || {};
             };
         },
         stateSetter: function(pageNumber, sortField, sortDirection, shouldGetCount) {
-            var pagePromise = app.getBuildingsData(sortField, sortDirection, pageNumber, shouldGetCount);
+            var pagePromise = app.getData(this.props.modelType, sortField, sortDirection, pageNumber, shouldGetCount);
             pagePromise.then(function (page, count) {
                 if (typeof count === 'undefined') {
                     console.log("count was undefined");
@@ -209,6 +209,7 @@ var app = app || {};
     var AppInterface = React.createClass({
         componentWillMount: function () {
             this.callback = (function () {
+                console.log("router on route");
                 this.forceUpdate();
             }).bind(this);
             this.props.router.on('route', this.callback)
@@ -221,14 +222,14 @@ var app = app || {};
             case 'buildings':
                 return (
                     <div>
-                    <DataGrid modelType={'buildings'} dataColumns={['name', 'address', 'city', 'state', 'zip']}/>
+                    <DataGrid modelType={'Building'} dataColumns={['name', 'address', 'city', 'state', 'zip']}/>
                     </div>
                 );
                 break;
             case 'tenants':
                 return (
                     <div>
-                    <DataGrid modelType={'tenants'} dataColumns={['name', 'phone', 'email', 'balance']} />
+                    <DataGrid modelType={'Tenant'} dataColumns={['name', 'phone', 'email', 'balance']} />
                     </div>
                 );
                 break;
