@@ -5,7 +5,55 @@ var app = app || {};
 
 (function () {
     'use strict';
+    var ModalTrigger = React.createClass({
+        handleClick: function(e) {
+            $(this.refs.payload.getDOMNode()).modal();
+        },
+        render: function() {
+            var trigger = this.props.trigger;
+            return (<div onClick={this.handleClick}>
+                {trigger}
+                <Modal ref="payload"
+                    header={this.props.header}
+                    body={this.props.body}
+                    footer={this.props.footer}>
+                </Modal>
+            </div>);
+        }
+    });
 
+    var Modal = React.createClass({
+        componentDidMount: function() {
+            // Initialize the modal, once we have the DOM node
+            // TODO: Pass these in via props
+            $(this.getDOMNode()).modal({background: true, keyboard: true, show: false});
+        },
+        componentWillUnmount: function() {
+            $(this.getDOMNode()).off('hidden');
+        },
+        // This was the key fix --- stop events from bubbling
+        handleClick: function(e) {
+            e.stopPropagation();
+        },
+        render: function() {
+            var Header = this.props.header;
+            var Body = this.props.body;
+            var Footer = this.props.footer;
+            return (
+                <div onClick={this.handleClick} className="modal fade" role="dialog" aria-hidden="true">
+                    <div className="modal-dialog">
+                        <div className="modal-content">
+                            <div className="modal-header">{Header}</div>
+                            <div className="modal-body">{Body}</div>
+                            <div className="modal-footer">{Footer}</div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+    });
+
+    //<button type="button" class="btn btn-default btn-xs"
 
     /**
      * Encapsulates Data table, Pagination buttons, and defines callback
@@ -97,10 +145,22 @@ var app = app || {};
             headers.push(<th onClick={this.props.updatePageCallback.bind(null, 1, column)} key={column}>{app.Utils.capitalize(column)}<small>{sortLabel}</small></th>);
         }.bind(this));
 
+        var newTenantButton = <button type="button" className="btn btn-default btn-xs"><span className="glyphicon glyphicon-plus"></span>  New</button>;
+        var modalHeading = <div className="modal-header"><button type="button" className="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 className="modal-title" id="myModalLabel">Modal title</h4></div>;
+        var modalFooter = (<div className="modal-footer">
+            <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" className="btn btn-primary">Save changes</button>
+        </div>);
+        var modalBody = (<div><h1>This is a modal</h1></div>);
+
         return (
           <div className="data-table">
             <div className="page-header">
-              <h1>{app.Utils.capitalize(this.props.tableHeading)}</h1>
+                <h1>{app.Utils.capitalize(this.props.tableHeading)}
+                    <small>
+                        <ModalTrigger trigger={newTenantButton} header={modalHeading} body={modalBody} footer={modalFooter}/>
+                    </small>
+                </h1>
             </div>
             <table className="table table-hover">
                 <thead>
