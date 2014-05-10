@@ -11,14 +11,14 @@ var app = app || {};
         },
         render: function() {
             var trigger = this.props.trigger;
-            return (<div onClick={this.handleClick}>
+            return (<span onClick={this.handleClick}>
                 {trigger}
                 <Modal ref="payload"
                     header={this.props.header}
                     body={this.props.body}
                     footer={this.props.footer}>
                 </Modal>
-            </div>);
+            </span>);
         }
     });
 
@@ -61,7 +61,6 @@ var app = app || {};
      */
     var DataGrid = React.createClass({
         getInitialState: function () {
-            console.log("in get initial state.");
             return {
                 sortField: 'id',
                 sortDirection: app.ASCENDING,
@@ -83,7 +82,6 @@ var app = app || {};
             }.bind(this));
         },
         componentDidMount: function () {
-            console.log("in component did mount.");
             this.stateSetter(1, 'id', app.ASCENDING, true);
         },
         updatePage: function(pageNumber, sortField) {
@@ -98,9 +96,8 @@ var app = app || {};
             this.stateSetter(pageNumber, sortField, sortDirection, false);
         },
         render: function () {
-                console.log("in render.");
                 var numberOfPages = Math.ceil(this.state.count / app.COUNT_PER_PAGE);
-                console.log("page length: " + this.state.count + ", count per page: " + app.COUNT_PER_PAGE + ", number of pages: " + numberOfPages);
+                console.log("total records: " + this.state.count + ", count per page: " + app.COUNT_PER_PAGE + ", number of pages: " + numberOfPages);
                 return (
                     <div>
                         <DataTable data={this.state.page} dataColumns={this.props.dataColumns} updatePageCallback={this.updatePage} tableHeading={this.props.modelType} sortField={this.state.sortField} sortDirection={this.state.sortDirection} />
@@ -124,7 +121,6 @@ var app = app || {};
             var obj = { id: row.id };
             for (var key in atts) {
                 if (atts.hasOwnProperty(key)) {
-                    console.log("key: " + key + ", val: " + atts[key]);
                     obj[key] = atts[key];
                 }
             }
@@ -133,7 +129,6 @@ var app = app || {};
         this.props.dataColumns.forEach(function (column) {
             var sortLabel;
             if (column === this.props.sortField) {
-                console.log("sort direction: " + this.props.sortDirection);
                 if (this.props.sortDirection) {
                     //true === ASCENDING
                     sortLabel = ' \u25B2';
@@ -155,14 +150,12 @@ var app = app || {};
 
         return (
           <div className="data-table">
-            <div className="page-header">
-                <h1>{app.Utils.capitalize(this.props.tableHeading)}
-                    <small>
-                        <ModalTrigger trigger={newTenantButton} header={modalHeading} body={modalBody} footer={modalFooter}/>
-                    </small>
-                </h1>
-            </div>
-            <table className="table table-hover">
+            <h2>{app.Utils.capitalize(this.props.tableHeading)}&nbsp;
+                <small>
+                    <ModalTrigger trigger={newTenantButton} header={modalHeading} body={modalBody} footer={modalFooter}/>
+                </small>
+            </h2>
+            <table className="table table-hover table-bordered table-condensed">
                 <thead>
                     <tr>
                         {headers}

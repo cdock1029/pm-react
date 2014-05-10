@@ -13,7 +13,7 @@ var app = app || {};
 
     app.ASCENDING = true;
     app.DESCENDING = false;
-    app.COUNT_PER_PAGE = 2;
+    app.COUNT_PER_PAGE = 3;
 
     var getCount = function(model) {
         console.log("inside getcount function");
@@ -22,7 +22,8 @@ var app = app || {};
     };
 
     app.getData = function (modelType, sortField, sortDirection, pageNumber, shouldGetCount) {
-        var Model = Parse.Object.extend(modelType);//(modelType);
+        console.log("getting data -- sortField: " + sortField + ", sortDirection: " + sortDirection + ", pageNumber: " + pageNumber + ", gettingcount? " + shouldGetCount);
+        var Model = Parse.Object.extend(modelType);
         var count, result;
         if (shouldGetCount) {
             count = getCount(Model);
