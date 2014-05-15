@@ -53,6 +53,36 @@ var app = app || {};
         }
     });
 
+    var NewTenantForm = React.createClass({
+        getInitialState: function() {
+            return {
+                name: '',
+                phone: '',
+                email: '',
+                balance: 0
+            };
+        },
+        handleChange: function() {
+
+        },
+        render: function() {
+            return (
+                <form role="form">
+                    <div className="form-group">
+                        <label>Email</label>
+                        <input type="email" className="form-control" id="newEmail" placeholder="Enter email"/>
+                    </div>
+                </form>
+            );
+        }
+    });
+
+    var NewBuildingForm = React.createClass({
+        render: function() {
+            return <h1>TEST!!</h1>;
+        }
+    });
+
     //<button type="button" class="btn btn-default btn-xs"
 
     /**
@@ -100,7 +130,7 @@ var app = app || {};
                 console.log("total records: " + this.state.count + ", count per page: " + app.COUNT_PER_PAGE + ", number of pages: " + numberOfPages);
                 return (
                     <div>
-                        <DataTable data={this.state.page} dataColumns={this.props.dataColumns} updatePageCallback={this.updatePage} tableHeading={this.props.modelType} sortField={this.state.sortField} sortDirection={this.state.sortDirection} />
+                        <DataTable data={this.state.page} dataColumns={this.props.dataColumns} updatePageCallback={this.updatePage} tableHeading={this.props.modelType} sortField={this.state.sortField} sortDirection={this.state.sortDirection} form={this.props.form} />
                         <Pagination numberOfPages={numberOfPages} currentPage={this.state.currentPageNumber} updatePageCallback={this.updatePage} />
                     </div>
                 );
@@ -143,7 +173,7 @@ var app = app || {};
                 <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
                 <button type="button" className="btn btn-primary">Save changes</button>
             </div>;
-        var modalBody = <div className="modal-body"><h1>This is a modal</h1></div>;
+        var modalBody = <div className="modal-body">{this.props.form}</div>;
 
         return (
           <div className="data-table">
@@ -270,14 +300,14 @@ var app = app || {};
             case 'buildings':
                 return (
                     <div>
-                    <DataGrid modelType={'Building'} dataColumns={['name', 'address', 'city', 'state', 'zip']}/>
+                    <DataGrid modelType={'Building'} dataColumns={['name', 'address', 'city', 'state', 'zip']} form={<NewBuildingForm />}/>
                     </div>
                 );
                 break;
             case 'tenants':
                 return (
                     <div>
-                    <DataGrid modelType={'Tenant'} dataColumns={['name', 'phone', 'email', 'balance']} />
+                    <DataGrid modelType={'Tenant'} dataColumns={['name', 'phone', 'email', 'balance']} form={<NewTenantForm />} />
                     </div>
                 );
                 break;
