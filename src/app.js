@@ -115,18 +115,15 @@ var app = app || {};
       render: function() {
         var headers = [];
         var rows = [];
+        var dataColumns = this.props.dataColumns;
         this.props.data.forEach(function(row) {
-            //TODO temporary hack to get working
-            var atts = row.attributes;
-            var obj = { id: row.id };
-            for (var key in atts) {
-                if (atts.hasOwnProperty(key)) {
-                    obj[key] = atts[key];
-                }
-            }
-            rows.push(<DataRow row={obj} key={obj.id} />);
+            var tableRow = { id: row.id };
+            dataColumns.forEach(function(column) {
+                tableRow[column] = row.attributes[column];
+            });
+            rows.push(<DataRow row={tableRow} key={tableRow.id} />);
         });
-        this.props.dataColumns.forEach(function (column) {
+        dataColumns.forEach(function (column) {
             var sortLabel;
             if (column === this.props.sortField) {
                 if (this.props.sortDirection) {
@@ -151,7 +148,7 @@ var app = app || {};
         return (
           <div className="data-table">
             <h2>{app.Utils.capitalize(this.props.tableHeading)}&nbsp;
-                    <ModalTrigger trigger={newTenantButton} header={modalHeader} body={modalBody} footer={modalFooter}/>
+                <ModalTrigger trigger={newTenantButton} header={modalHeader} body={modalBody} footer={modalFooter}/>
             </h2>
             <table className="table table-hover table-bordered table-condensed">
                 <thead>
