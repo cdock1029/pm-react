@@ -43,9 +43,9 @@ var app = app || {};
                 <div onClick={this.handleClick} className="modal fade" role="dialog" aria-hidden="true">
                     <div className="modal-dialog">
                         <div className="modal-content">
-                            <div className="modal-header">{Header}</div>
-                            <div className="modal-body">{Body}</div>
-                            <div className="modal-footer">{Footer}</div>
+                            {Header}
+                            {Body}
+                            {Footer}
                         </div>
                     </div>
                 </div>
@@ -141,19 +141,17 @@ var app = app || {};
         }.bind(this));
 
         var newTenantButton = <button type="button" className="btn btn-default btn-xs"><span className="glyphicon glyphicon-plus"></span>  New</button>;
-        var modalHeading = <div className="modal-header"><button type="button" className="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 className="modal-title" id="myModalLabel">Modal title</h4></div>;
-        var modalFooter = (<div className="modal-footer">
-            <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="button" className="btn btn-primary">Save changes</button>
-        </div>);
-        var modalBody = (<div><h1>This is a modal</h1></div>);
+        var modalHeader = <div className="modal-header"><button type="button" className="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 className="modal-title" id="myModalLabel">Modal title</h4></div>;
+        var modalFooter = <div className="modal-footer">
+                <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" className="btn btn-primary">Save changes</button>
+            </div>;
+        var modalBody = <div className="modal-body"><h1>This is a modal</h1></div>;
 
         return (
           <div className="data-table">
             <h2>{app.Utils.capitalize(this.props.tableHeading)}&nbsp;
-                <small>
-                    <ModalTrigger trigger={newTenantButton} header={modalHeading} body={modalBody} footer={modalFooter}/>
-                </small>
+                    <ModalTrigger trigger={newTenantButton} header={modalHeader} body={modalBody} footer={modalFooter}/>
             </h2>
             <table className="table table-hover table-bordered table-condensed">
                 <thead>
