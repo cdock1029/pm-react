@@ -289,7 +289,7 @@ var app = app || {};
             this.callback = (function () {
                 console.log("router on route");
                 this.forceUpdate();
-            }).bind(this);
+            }.bind(this));
             this.props.router.on('route', this.callback)
         },
         componentWillUnmount: function () {

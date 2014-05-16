@@ -13,7 +13,7 @@ var app = app || {};
 
     app.ASCENDING = true;
     app.DESCENDING = false;
-    app.COUNT_PER_PAGE = 3;
+    app.COUNT_PER_PAGE = 10;
 
     var getCount = function(model) {
         console.log("inside getcount function");
