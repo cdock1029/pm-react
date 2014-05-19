@@ -21,3 +21,4 @@ Thumbs.db
 /bower_components
 /build
 src/parseCredentials.js
+.bundle.js

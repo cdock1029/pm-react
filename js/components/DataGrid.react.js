@@ -3,7 +3,7 @@ var DataTable = require('./DataTable.react');
 var Pagination = require('./Pagination.react');
 
 var getData = function(modelType, sortField, sortDirection, pageNumber, shouldGetcount) {
-
+    return app.getData(modelType, sortField, sortDirection, pageNumber, shouldGetcount);
 };
 
 /**
@@ -21,7 +21,7 @@ var DataGrid = React.createClass({
         };
     },
     stateSetter: function(pageNumber, sortField, sortDirection, shouldGetCount) {
-        var pagePromise = app.getData(this.props.modelType, sortField, sortDirection, pageNumber, shouldGetCount);
+        var pagePromise = getData(this.props.modelType, sortField, sortDirection, pageNumber, shouldGetCount);
         pagePromise.then(function (page, count) {
             if (typeof count === 'undefined') {
                 console.log("count was undefined");

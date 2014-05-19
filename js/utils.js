@@ -1,8 +1,5 @@
 var app = app || {};
-
-(function () {
-	'use strict';
-
+(function() {
     Parse.initialize(app.Parse.applicationId, app.Parse.javaScriptKey);
 
 	app.Utils = {
@@ -46,5 +43,4 @@ var app = app || {};
         }
         return query.find();
     };
-
 })();
