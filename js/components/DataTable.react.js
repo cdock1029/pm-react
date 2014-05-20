@@ -1,3 +1,4 @@
+/** @jsx React.DOM */
 var React = require('react');
 var ModalTrigger = require('./ModalTrigger.react');
 var DataRow = require('./DataRow.react');

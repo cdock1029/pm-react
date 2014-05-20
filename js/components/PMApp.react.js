@@ -1,3 +1,4 @@
+/** @jsx React.DOM */
 var React = require('react');
 var Header = require('./Header.react');
 var DataGrid = require('./DataGrid.react');

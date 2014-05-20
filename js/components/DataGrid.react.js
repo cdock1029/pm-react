@@ -1,3 +1,4 @@
+/** @jsx React.DOM */
 var React = require('react');
 var DataTable = require('./DataTable.react');
 var Pagination = require('./Pagination.react');
