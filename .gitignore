@@ -22,3 +22,4 @@ Thumbs.db
 /build
 src/parseCredentials.js
 .bundle.js
+js/bundle.js
