@@ -4,16 +4,16 @@
     "description": "Flux app",
     "main": "js/app.js",
     "dependencies": {
-        "es6-promise": "~0.1.1",
-        "react": "~0.9"
+        "es6-promise": "^1.0.0",
+        "react": "^0.10.0"
     },
     "devDependencies": {
-        "browserify": "~2.36.0",
-        "envify": "~1.2.0",
-        "reactify": "~0.4.0",
-        "statics": "~0.1.0",
-        "uglifyjs": "~2.3.6",
-        "watchify": "~0.4.1"
+        "browserify": "^4.1.5",
+        "envify": "^1.2.1",
+        "reactify": "^0.13.1",
+        "statics": "^0.1.0",
+        "uglifyjs": "^2.3.6",
+        "watchify": "^0.10.1"
     },
     "scripts": {
         "start": "STATIC_ROOT=./static watchify -o js/bundle.js -v -d .",
