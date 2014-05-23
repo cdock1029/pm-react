@@ -3,82 +3,77 @@ var EventEmitter = require('events').EventEmitter;
 
 var merge = require('react/lib/merge');
 
-var CHANGE_EVENT = 'change';
+var getCount = function() {
+    var query = new Parse.Query(Tenant);
+    return query.count();
+};
 
-var _tenants = [
-{
-    "id": 0,
-    "name": "Meredith Barlow",
-    "phone": "(840) 412-3566",
-    "email": "meredithbarlow@musanpoly.com",
-    "balance": 27986
-},
-{
-    "id": 1,
-    "name": "Goff Warner",
-    "phone": "(821) 539-2661",
-    "email": "goffwarner@musanpoly.com",
-    "balance": 9591
-},
-{
-    "id": 2,
-    "name": "Sparks Fields",
-    "phone": "(960) 576-3894",
-    "email": "sparksfields@musanpoly.com",
-    "balance": 32924
-},
-{
-    "id": 3,
-    "name": "Michele Adkins",
-    "phone": "(823) 494-3723",
-    "email": "micheleadkins@musanpoly.com",
-    "balance": 22233
-},
-{
-    "id": 4,
-    "name": "Vasquez Workman",
-    "phone": "(934) 535-3037",
-    "email": "vasquezworkman@musanpoly.com",
-    "balance": 9897
-},
-{
-    "id": 5,
-    "name": "Nikki Knowles",
-    "phone": "(951) 514-3013",
-    "email": "nikkiknowles@musanpoly.com",
-    "balance": 3652
-}
-];
+var Tenant = Parse.Object.extend({
 
 
-function create(name, phone, email, balance) {
-    _tenants.push({
-        id: _tenants.length,
-        name: name,
-        phone: phone,
-        email: email,
-        balance: balance
-    });
-}
+    create: function(name, phone, email, balance) {
+        var instance = new Tenant();
+        instance.set('name', name);
+        instance.set('phone', phone);
+        instance.set('email', email);
+        instance.set('balance', balance);
+        instance.save();
+        return instance;
+    },
 
-var TenantStore = merge(EventEmitter.prototype, {
-    getPage: function(sortField, sortDirection, pageNumber, countPerPage, shouldGetCount) {
+    getPage: function(sortField, sortDirection, pageNumber, shouldGetCount, countPerPage, cb) {
+        var collection = new Tenant.Collection();
+
+        var count, result;
+        if (shouldGetCount) {
+            count = getCount();
+        }
+
         var start = (pageNumber - 1) * countPerPage;
-        console.log("start index: " + start);
-        var stringSort = function (str) {
-            return function(a, b) {
-                if (a[str] > b[str]) {
-                    return sortDirection ? 1 : -1;
-                }
-                if (a[str] < b[str]) {
-                    return sortDirection ? -1 : 1;
-                }
-                return 0;
-            };
-        };
-        var count = shouldGetCount ? _tenants.length : -1;
-        _tenants.sort(stringSort(sortField));
-        return { data: _tenants.slice(start, start + countPerPage), totalCount: count };
+
+        collection.query = new Parse.Query(Tenant);
+        collection.query.limit(countPerPage);
+        collection.query.skip(start);
+
+        if (sortDirection) {
+            collection.query.ascending(sortField);
+        } else {
+            collection.query.descending(sortField);
+        }
+
+        var promise;
+        if (shouldGetCount && count) {
+            console.log("returning when promise");
+            promise = Parse.Promise.when(collection.fetch(), count);
+        } else {
+            promise = collection.fetch();
+        }
+
+        promise.then(function(page, count) {
+            if (typeof count === 'undefined') {
+                console.log('count was undefined');
+
+            }
+        }, function(obj,err) {
+            console.error('getPage(..) error',obj,err);
+        });
+
+    }
+});
+
+Tenant.Page = Parse.Collection.extend({
+    model: Tenant,
+    sortField: 'id',
+    sortDirection: app.ASCENDING,
+    currentPageNumber: 1,
+    count:-1,
+    countPerPage:10,
+
+    createTenant: function(name, phone, email, balance) {
+        this.add(Tenant.create(name, phone, email, balance));
     }
 
+
 });
+
+module.exports = Tenant;

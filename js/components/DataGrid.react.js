@@ -1,5 +1,6 @@
 /** @jsx React.DOM */
 var React = require('react');
+var ReactHack = require('ReactHack');
 var DataTable = require('./DataTable.react');
 var Pagination = require('./Pagination.react');
 
@@ -12,31 +13,33 @@ var getData = function(modelType, sortField, sortDirection, pageNumber, shouldGe
  * function to navigate between pages of data.
  */
 var DataGrid = React.createClass({
+    mixins: [ReactHack.FetchingMixin],
+    modelState: ['page'],
+    stateSetter: function(keyArr) {
+        return function(valueArr) {
+            var newState = {};
+            keyArr.forEach(function(key, index) {
+                newState[key] = valueArr[index];
+            });
+            this.setState(newState);
+        }.bind(this);
+    },
     getInitialState: function () {
         return {
             sortField: 'id',
             sortDirection: app.ASCENDING,
             currentPageNumber: 1,
-            page:[],
-            count: 0
+            count: -1,
+            page:{}
         };
-    },
-    stateSetter: function(pageNumber, sortField, sortDirection, shouldGetCount) {
-        var pagePromise = getData(this.props.modelType, sortField, sortDirection, pageNumber, shouldGetCount);
-        pagePromise.then(function (page, count) {
-            if (typeof count === 'undefined') {
-                console.log("count was undefined");
-                count = this.state.count;
-            }
-            window.pageObj = page;
-            console.log("inside pagePromise.then");
-            this.setState({ sortField: sortField, sortDirection: sortDirection, currentPageNumber: pageNumber, page: page, count: count });
-        }.bind(this));
     },
     componentDidMount: function () {
         this.stateSetter(1, 'id', app.ASCENDING, true);
     },
-    updatePage: function(pageNumber, sortField) {
+    fetchData: function() {
+
+    },
+    getPage: function(pageNumber, sortField) {
         var sortDirection = this.state.sortDirection;
         if (!sortField) {
             sortField = this.state.sortField;
@@ -48,7 +51,7 @@ var DataGrid = React.createClass({
         this.stateSetter(pageNumber, sortField, sortDirection, false);
     },
     render: function () {
-        var numberOfPages = Math.ceil(this.state.count / app.COUNT_PER_PAGE);
+        var numberOfPages = Math.ceil(this.state.page.get('count') / app.COUNT_PER_PAGE);
         console.log("total records: " + this.state.count + ", count per page: " + app.COUNT_PER_PAGE + ", number of pages: " + numberOfPages);
         return (
             <div>
