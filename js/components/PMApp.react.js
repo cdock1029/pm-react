@@ -17,6 +17,10 @@ var PMApp = React.createClass({
         this.props.router.on('route', this.callback)
     },
     componentWillUnmount: function () {
+        this.callback = (function () {
+            console.log("router off route");
+            this.forceUpdate();
+        }.bind(this));
         this.props.router.off('route', this.callback);
     },
     render: function () {

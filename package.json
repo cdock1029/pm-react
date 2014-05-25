@@ -5,8 +5,7 @@
     "main": "js/app.js",
     "dependencies": {
         "es6-promise": "^1.0.0",
-        "react": "^0.10.0",
-        "ReactHack": "petehunt/reacthack-core"
+        "react": "^0.10.0"
     },
     "devDependencies": {
         "browserify": "^4.1.5",

@@ -2,6 +2,7 @@
 var React = require('react');
 var ModalTrigger = require('./ModalTrigger.react');
 var DataRow = require('./DataRow.react');
+var PMActions = require('../actions/PMActions');
 
 /**
  * All Data rows, and table header/title
@@ -29,7 +30,7 @@ var DataTable = React.createClass({
                     sortLabel = ' \u25BC';
                 }
             }
-            headers.push(<th onClick={this.props.updatePageCallback.bind(null, 1, column)} key={column}>{app.Utils.capitalize(column)}<small>{sortLabel}</small></th>);
+            headers.push(<th onClick={this._onTableHeaderClick.bind(null, column)} key={column}>{app.Utils.capitalize(column)}<small>{sortLabel}</small></th>);
         }.bind(this));
 
         var newTenantButton = <button type="button" className="btn btn-default btn-xs"><span className="glyphicon glyphicon-plus"></span>  New</button>;
@@ -55,6 +56,9 @@ var DataTable = React.createClass({
                 </table>
             </div>
         );
+    },
+    _onTableHeaderClick: function (column) {
+        PMActions.sortColumn(column);
     }
 });
 

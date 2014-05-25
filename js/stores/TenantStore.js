@@ -1,15 +1,32 @@
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
-
+var PMConstants = require('../constants/PMConstants');
 var merge = require('react/lib/merge');
+
+var pageState = {
+    pageNumber: 1,
+    sortColumn: 'id',
+    sortDirection: PMConstants.ASCENDING
+};
 
 var getCount = function() {
     var query = new Parse.Query(Tenant);
     return query.count();
 };
 
-var Tenant = Parse.Object.extend({
+var updatePageState = function(updates) {
+    pageState = merge(pageState, updates);
+};
 
+var setPageColumn = function(column) {
+    if (pageState.column === column) {
+        updatePageState({ sortDirection: ! pageState.sortDirection });
+    } else {
+        updatePageState({ pageNumber: 1, sortColumn: column, sortDirection: PMConstants.ASCENDING  });
+    }
+};
+
+var Tenant = Parse.Object.extend({
 
     create: function(name, phone, email, balance) {
         var instance = new Tenant();
@@ -63,11 +80,6 @@ var Tenant = Parse.Object.extend({
 
 Tenant.Page = Parse.Collection.extend({
     model: Tenant,
-    sortField: 'id',
-    sortDirection: app.ASCENDING,
-    currentPageNumber: 1,
-    count:-1,
-    countPerPage:10,
 
     createTenant: function(name, phone, email, balance) {
         this.add(Tenant.create(name, phone, email, balance));
@@ -76,4 +88,18 @@ Tenant.Page = Parse.Collection.extend({
 
 });
 
-module.exports = Tenant;
+AppDispatcher.register(function(payload) {
+    var action = payload.action;
+    var tenant;
+
+    switch(action.actionType) {
+        case PMConstants.TENANT_CREATE:
+            Tenant.create(payload.name, payload.phone, payload.email, payload.balance);
+            break;
+        case PMConstants.TENANT_SORT:
+            setPageColumn(payload.column);
+            break;
+    }
+});
+
+module.exports = TenantStore;

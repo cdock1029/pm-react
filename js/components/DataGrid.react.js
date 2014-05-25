@@ -13,8 +13,6 @@ var getData = function(modelType, sortField, sortDirection, pageNumber, shouldGe
  * function to navigate between pages of data.
  */
 var DataGrid = React.createClass({
-    mixins: [ReactHack.FetchingMixin],
-    modelState: ['page'],
     stateSetter: function(keyArr) {
         return function(valueArr) {
             var newState = {};
