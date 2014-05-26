@@ -1,11 +1,17 @@
 /** @jsx React.DOM */
 var React = require('react');
-var ReactHack = require('ReactHack');
 var DataTable = require('./DataTable.react');
 var Pagination = require('./Pagination.react');
 
-var getData = function(modelType, sortField, sortDirection, pageNumber, shouldGetcount) {
-    return app.getData(modelType, sortField, sortDirection, pageNumber, shouldGetcount);
+var getState = function(store) {
+    var state = store.getPageState();
+    return {
+        sortField: state.sortField,
+        sortDirection: state.sortDirection,
+        pageNumber: state.pageNumber,
+        count: state.count,
+        page: state.page
+    };
 };
 
 /**
@@ -13,39 +19,20 @@ var getData = function(modelType, sortField, sortDirection, pageNumber, shouldGe
  * function to navigate between pages of data.
  */
 var DataGrid = React.createClass({
-    stateSetter: function(keyArr) {
-        return function(valueArr) {
-            var newState = {};
-            keyArr.forEach(function(key, index) {
-                newState[key] = valueArr[index];
-            });
-            this.setState(newState);
-        }.bind(this);
-    },
     getInitialState: function () {
-        return {
-            sortField: 'id',
-            sortDirection: app.ASCENDING,
-            currentPageNumber: 1,
-            count: -1,
-            page:{}
-        };
+        return getState(this.props.store);
     },
     componentDidMount: function () {
-        this.stateSetter(1, 'id', app.ASCENDING, true);
+        this.props.store.addChangeListener(this._onChange);
     },
-    fetchData: function() {
-
+    componentWillUnmount: function() {
+        this.props.store.removeChangeListener(this._onChange);
+    },
+    _onChange: function() {
+        this.setState(getState(this.props.store));
     },
     getPage: function(pageNumber, sortField) {
-        var sortDirection = this.state.sortDirection;
-        if (!sortField) {
-            sortField = this.state.sortField;
-        } else if (sortField === this.state.sortField) {
-            sortDirection = !sortDirection;
-        } else {
-            sortDirection = app.ASCENDING;
-        }
+
         this.stateSetter(pageNumber, sortField, sortDirection, false);
     },
     render: function () {
@@ -53,8 +40,8 @@ var DataGrid = React.createClass({
         console.log("total records: " + this.state.count + ", count per page: " + app.COUNT_PER_PAGE + ", number of pages: " + numberOfPages);
         return (
             <div>
-                <DataTable data={this.state.page} dataColumns={this.props.dataColumns} updatePageCallback={this.updatePage} tableHeading={this.props.modelType} sortField={this.state.sortField} sortDirection={this.state.sortDirection} form={this.props.form} />
-                <Pagination numberOfPages={numberOfPages} currentPage={this.state.currentPageNumber} updatePageCallback={this.updatePage} />
+                <DataTable data={this.state} dataColumns={this.props.dataColumns} updatePageCallback={this.updatePage} tableHeading={this.props.modelType} sortField={this.state.sortField} sortDirection={this.state.sortDirection} form={this.props.form} />
+                <Pagination numberOfPages={numberOfPages} currentPage={this.state.pageNumber} updatePageCallback={this.updatePage} />
             </div>
         );
     }

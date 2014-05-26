@@ -38,6 +38,17 @@ var Tenant = Parse.Object.extend({
         return instance;
     },
 
+    /*
+     var sortDirection = this.state.sortDirection;
+     if (!sortField) {
+     sortField = this.state.sortField;
+     } else if (sortField === this.state.sortField) {
+     sortDirection = !sortDirection;
+     } else {
+     sortDirection = app.ASCENDING;
+     }
+     */
+
     getPage: function(sortField, sortDirection, pageNumber, shouldGetCount, countPerPage, cb) {
         var collection = new Tenant.Collection();
 
