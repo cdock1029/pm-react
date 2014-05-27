@@ -2,7 +2,6 @@
 var React = require('react');
 var ModalTrigger = require('./ModalTrigger.react');
 var DataRow = require('./DataRow.react');
-var PMActions = require('../actions/PMActions');
 
 /**
  * All Data rows, and table header/title
@@ -21,7 +20,7 @@ var DataTable = React.createClass({
         });
         dataColumns.forEach(function (column) {
             var sortLabel;
-            if (column === this.props.sortField) {
+            if (column === this.props.sortColumn) {
                 if (this.props.sortDirection) {
                     //true === ASCENDING
                     sortLabel = ' \u25B2';

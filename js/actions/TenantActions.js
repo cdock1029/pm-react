@@ -2,14 +2,14 @@
 var AppDispatcher =  require('../dispatcher/AppDispatcher');
 var PMConstants = require('../constants/PMConstants');
 
-var PMActions = {
+var TenantActions = {
     sortColumn: function(column) {
         AppDispatcher.handleViewAction({
-            actionType: PMConstants.TENANT_SORT,
+            actionType: PMConstants.SORT,
             column: column
         });
     }
 };
 
 
-module.exports = PMActions;
+module.exports = TenantActions;

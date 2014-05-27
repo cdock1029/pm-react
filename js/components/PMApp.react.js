@@ -5,6 +5,9 @@ var DataGrid = require('./DataGrid.react');
 var NewTenantForm = require('./NewTenantForm.react');
 var NewBuildingForm = require('./NewBuildingForm.react');
 
+var TenantActions = require('../actions/TenantActions');
+var TenantStore = require('../stores/TenantStore');
+
 /**
  * Renders appropriate components on page based on route.
  */
@@ -26,6 +29,7 @@ var PMApp = React.createClass({
     render: function () {
         var app;
         switch(this.props.router.current) {
+            /*
             case 'buildings':
                 app = (
                     <div>
@@ -33,12 +37,12 @@ var PMApp = React.createClass({
                         <DataGrid modelType={'Building'} dataColumns={['name', 'address', 'city', 'state', 'zip']} form={<NewBuildingForm />}/>
                     </div>
                 );
-                break;
+                break;*/
             case 'tenants':
                 app = (
                     <div>
                         <Header />
-                        <DataGrid modelType={'Tenant'} dataColumns={['name', 'phone', 'email', 'balance']} form={<NewTenantForm />} />
+                        <DataGrid actions={TenantActions} store={TenantStore} form={<NewTenantForm />} />
                     </div>
                 );
                 break;

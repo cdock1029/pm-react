@@ -3,13 +3,20 @@ var EventEmitter = require('events').EventEmitter;
 var PMConstants = require('../constants/PMConstants');
 var merge = require('react/lib/merge');
 
+var CHANGE_EVENT = 'change';
+var MODEL = 'Tenant';
+
+var COUNT_PER_PAGE = 5;
+
 var pageState = {
-    pageNumber: 1,
     sortColumn: 'id',
-    sortDirection: PMConstants.ASCENDING
+    sortDirection: PMConstants.ASCENDING,
+    pageNumber: 1,
+    count: -1,
+    page: []
 };
 
-var getCount = function() {
+var getCountPromise = function() {
     var query = new Parse.Query(Tenant);
     return query.count();
 };
@@ -18,76 +25,43 @@ var updatePageState = function(updates) {
     pageState = merge(pageState, updates);
 };
 
-var setPageColumn = function(column) {
-    if (pageState.column === column) {
-        updatePageState({ sortDirection: ! pageState.sortDirection });
+var setSortColumn = function(column) {
+    if (pageState.sortColumn === column) {
+        updatePageState({ sortDirection: ! pageState.sortDirection, pageNumber: 1 });
     } else {
-        updatePageState({ pageNumber: 1, sortColumn: column, sortDirection: PMConstants.ASCENDING  });
+        updatePageState({ sortDirection: PMConstants.ASCENDING, pageNumber: 1, sortColumn: column });
     }
 };
 
-var Tenant = Parse.Object.extend({
-
-    create: function(name, phone, email, balance) {
-        var instance = new Tenant();
-        instance.set('name', name);
-        instance.set('phone', phone);
-        instance.set('email', email);
-        instance.set('balance', balance);
-        instance.save();
-        return instance;
-    },
-
-    /*
-     var sortDirection = this.state.sortDirection;
-     if (!sortField) {
-     sortField = this.state.sortField;
-     } else if (sortField === this.state.sortField) {
-     sortDirection = !sortDirection;
-     } else {
-     sortDirection = app.ASCENDING;
-     }
-     */
-
-    getPage: function(sortField, sortDirection, pageNumber, shouldGetCount, countPerPage, cb) {
-        var collection = new Tenant.Collection();
-
-        var count, result;
-        if (shouldGetCount) {
-            count = getCount();
-        }
-
-        var start = (pageNumber - 1) * countPerPage;
-
-        collection.query = new Parse.Query(Tenant);
-        collection.query.limit(countPerPage);
-        collection.query.skip(start);
-
-        if (sortDirection) {
-            collection.query.ascending(sortField);
-        } else {
-            collection.query.descending(sortField);
-        }
-
-        var promise;
-        if (shouldGetCount && count) {
-            console.log("returning when promise");
-            promise = Parse.Promise.when(collection.fetch(), count);
-        } else {
-            promise = collection.fetch();
-        }
-
-        promise.then(function(page, count) {
-            if (typeof count === 'undefined') {
-                console.log('count was undefined');
-
-            }
-        }, function(obj,err) {
-            console.error('getPage(..) error',obj,err);
-        });
-
+var fetchPageData = function(shouldGetCount, cb) {
+    var Model = Parse.Object.extend(MODEL);
+    var countPromise, result;
+    if (shouldGetCount) {
+        countPromise = getCountPromise();
     }
-});
+
+    var start = (pageState.pageNumber - 1) * COUNT_PER_PAGE;
+
+    var query = new Parse.Query(Model);
+    query.limit(COUNT_PER_PAGE);
+    query.skip(start);
+
+    if (pageState.sortDirection) {
+        query.ascending(pageState.sortColumn);
+    } else {
+        query.descending(pageState.sortColumn);
+    }
+
+    if (shouldGetCount && countPromise) {
+        Parse.Promise.when(query.find(), countPromise).then(function(page, count) {
+
+        });
+    }
+    query.find().then(function(page) {
+
+    });
+};
+
 
 Tenant.Page = Parse.Collection.extend({
     model: Tenant,
@@ -99,16 +73,36 @@ Tenant.Page = Parse.Collection.extend({
 
 });
 
+var TenantStore = merge(EventEmitter.prototype, {
+
+    getPageState: function() {
+        return pageState;
+    },
+    getDataColumns: function() {
+        return ['name', 'phone', 'email', 'balance'];
+    },
+    emitChange: function () {
+        this.emit(CHANGE_EVENT);
+    },
+    addChangeListener: function(callback) {
+        this.on(CHANGE_EVENT, callback);
+    },
+    removeChangeListener: function(callback) {
+        this.removeListener(CHANGE_EVENT, callback);
+    }
+
+});
+
 AppDispatcher.register(function(payload) {
     var action = payload.action;
-    var tenant;
 
     switch(action.actionType) {
-        case PMConstants.TENANT_CREATE:
+        case PMConstants.CREATE:
             Tenant.create(payload.name, payload.phone, payload.email, payload.balance);
             break;
-        case PMConstants.TENANT_SORT:
-            setPageColumn(payload.column);
+        case PMConstants.SORT:
+            setSortColumn(payload.column);
+            fetchPageData(true, TenantStore.emitChange);
             break;
     }
 });
