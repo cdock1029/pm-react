@@ -8,13 +8,15 @@ var MODEL = 'Tenant';
 
 var COUNT_PER_PAGE = 5;
 
-var pageState = {
+var DEFAULT_STATE = {
     sortColumn: 'id',
     sortDirection: PMConstants.ASCENDING,
     pageNumber: 1,
     count: -1,
     page: []
 };
+
+var pageState = DEFAULT_STATE;
 
 var getCountPromise = function() {
     var query = new Parse.Query(Tenant);
@@ -35,7 +37,7 @@ var setSortColumn = function(column) {
 
 var fetchPageData = function(shouldGetCount, cb) {
     var Model = Parse.Object.extend(MODEL);
-    var countPromise, result;
+    var countPromise;
     if (shouldGetCount) {
         countPromise = getCountPromise();
     }
@@ -51,38 +53,53 @@ var fetchPageData = function(shouldGetCount, cb) {
     } else {
         query.descending(pageState.sortColumn);
     }
-
+    var promise;
     if (shouldGetCount && countPromise) {
-        Parse.Promise.when(query.find(), countPromise).then(function(page, count) {
-
-        });
+        promise = Parse.Promise.when(query.find(), countPromise);
+    } else {
+        promise = query.find();
     }
-    query.find().then(function(page) {
-
+    promise.then(function(page, count) {
+        var pageState = {};
+        if (count) {
+            pageState['count'] = count;
+        }
+        pageState['page'] = page;
+        updatePageState(pageState);
+        cb();
     });
 };
 
+var createTenant = function(payload, cb) {
+    var Tenant = Parse.Object.extend(MODEL);
+    var tenant = new Tenant();
 
-Tenant.Page = Parse.Collection.extend({
-    model: Tenant,
+    tenant.set('name', payload.name);
+    tenant.set('phone', payload.phone);
+    tenant.set('email', payload.email);
+    tenant.set('balance', payload.balance);
 
-    createTenant: function(name, phone, email, balance) {
-        this.add(Tenant.create(name, phone, email, balance));
-    }
-
-
-});
+    tenant.save(null, {
+        success: function (tenant) {
+            //TODO clean this up
+            updatePageState(DEFAULT_STATE);
+            fetchPageData(true, cb);
+        },
+        error: function (tenant, error) {
+            alert('Failed to save tenant. ' + error.description);
+        }
+    });
+};
 
 var TenantStore = merge(EventEmitter.prototype, {
-
+    emitChange: function () {
+        this.emit(CHANGE_EVENT);
+    },
     getPageState: function() {
         return pageState;
     },
     getDataColumns: function() {
         return ['name', 'phone', 'email', 'balance'];
-    },
-    emitChange: function () {
-        this.emit(CHANGE_EVENT);
     },
     addChangeListener: function(callback) {
         this.on(CHANGE_EVENT, callback);
@@ -90,7 +107,6 @@ var TenantStore = merge(EventEmitter.prototype, {
     removeChangeListener: function(callback) {
         this.removeListener(CHANGE_EVENT, callback);
     }
-
 });
 
 AppDispatcher.register(function(payload) {
@@ -98,7 +114,7 @@ AppDispatcher.register(function(payload) {
 
     switch(action.actionType) {
         case PMConstants.CREATE:
-            Tenant.create(payload.name, payload.phone, payload.email, payload.balance);
+            createTenant(payload, TenantStore.emitChange);
             break;
         case PMConstants.SORT:
             setSortColumn(payload.column);
