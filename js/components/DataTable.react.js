@@ -57,7 +57,7 @@ var DataTable = React.createClass({
         );
     },
     _onTableHeaderClick: function (column) {
-        PMActions.sortColumn(column);
+        this.props.actions.sortColumn(column);
     }
 });
 

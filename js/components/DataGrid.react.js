@@ -13,6 +13,7 @@ var DataGrid = React.createClass({
     },
     componentDidMount: function () {
         this.props.store.addChangeListener(this._onChange);
+        this.props.store.reloadData();
     },
     componentWillUnmount: function() {
         this.props.store.removeChangeListener(this._onChange);
@@ -21,14 +22,15 @@ var DataGrid = React.createClass({
         this.setState(this.getState());
     },
     getState: function() {
-        return this.store.getPageState();
+        return this.props.store.getPageState();
     },
     render: function () {
-        var dataColumns = this.store.getDataColumns();
+        var dataColumns = this.props.store.getDataColumns();
+        var heading = this.props.store.getTableHeading();
         var numberOfPages = Math.ceil(this.state.count / app.COUNT_PER_PAGE);
         return (
             <div>
-                <DataTable data={this.state} dataColumns={dataColumns} tableHeading={this.props.modelType} sortField={this.state.sortField} sortDirection={this.state.sortDirection} form={this.props.form} />
+                <DataTable data={this.state.page} dataColumns={dataColumns} actions={this.props.actions} tableHeading={heading} sortColumn={this.state.sortColumn} sortDirection={this.state.sortDirection} form={this.props.form} />
                 <Pagination numberOfPages={numberOfPages} currentPage={this.state.pageNumber} />
             </div>
         );

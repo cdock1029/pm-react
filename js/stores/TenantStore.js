@@ -5,6 +5,7 @@ var merge = require('react/lib/merge');
 
 var CHANGE_EVENT = 'change';
 var MODEL = 'Tenant';
+var HEADING = 'Tenants';
 
 var COUNT_PER_PAGE = 5;
 
@@ -19,7 +20,7 @@ var DEFAULT_STATE = {
 var pageState = DEFAULT_STATE;
 
 var getCountPromise = function() {
-    var query = new Parse.Query(Tenant);
+    var query = new Parse.Query(MODEL);
     return query.count();
 };
 
@@ -93,9 +94,11 @@ var createTenant = function(payload, cb) {
 
 var TenantStore = merge(EventEmitter.prototype, {
     emitChange: function () {
+        console.log('emitting change..');
         this.emit(CHANGE_EVENT);
     },
     getPageState: function() {
+        console.log('TenantStore.getPageState');
         return pageState;
     },
     getDataColumns: function() {
@@ -106,6 +109,12 @@ var TenantStore = merge(EventEmitter.prototype, {
     },
     removeChangeListener: function(callback) {
         this.removeListener(CHANGE_EVENT, callback);
+    },
+    getTableHeading: function() {
+        return HEADING;
+    },
+    reloadData: function() {
+        fetchPageData(true, this.emitChange);
     }
 });
 
@@ -117,6 +126,7 @@ AppDispatcher.register(function(payload) {
             createTenant(payload, TenantStore.emitChange);
             break;
         case PMConstants.SORT:
+            console.log('Dispatch action type SORT');
             setSortColumn(payload.column);
             fetchPageData(true, TenantStore.emitChange);
             break;
