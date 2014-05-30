@@ -12,24 +12,24 @@ var Pagination = React.createClass({
             var button;
             if (this.props.currentPage === i) {
                 //don't add the callback to "current page" button. We're on it already
-                button = <PageButton pageNumber={i} label={i} key={i} />;
+                button = <PageButton pageNumber={i} label={i} key={i} action={this.props.action} />;
             } else {
-                button = <PageButton pageNumber={i} label={i} updatePageCallback={this.props.updatePageCallback} key={i} />;
+                button = <PageButton pageNumber={i} label={i} shouldHaveLink={true} key={i} action={this.props.action} />;
             }
             pageNumberButtons.push(button);
         }
         var nextButton, previousButton;
         //We're on the LAST page, disable "next"
         if (this.props.currentPage === this.props.numberOfPages) {
-            nextButton = <PageButton iconClasses={'glyphicon glyphicon-chevron-right'} />;
+            nextButton = <PageButton iconClasses={'glyphicon glyphicon-chevron-right'} action={this.props.action} />;
         } else {
-            nextButton = <PageButton iconClasses={'glyphicon glyphicon-chevron-right'} updatePageCallback={this.props.updatePageCallback} pageNumber={this.props.currentPage + 1}  />;
+            nextButton = <PageButton iconClasses={'glyphicon glyphicon-chevron-right'} shouldHaveLink={true} pageNumber={this.props.currentPage + 1} action={this.props.action} />;
         }
         //We're on the FIRST page, disable "previous"
         if (this.props.currentPage === 1) {
             previousButton = <PageButton iconClasses={'glyphicon glyphicon-chevron-left'} />;
         } else {
-            previousButton = <PageButton iconClasses={'glyphicon glyphicon-chevron-left'} updatePageCallback={this.props.updatePageCallback} pageNumber={this.props.currentPage - 1} />;
+            previousButton = <PageButton iconClasses={'glyphicon glyphicon-chevron-left'} shouldHaveLink={true} pageNumber={this.props.currentPage - 1} action={this.props.action}/>;
         }
         return (
             <ul className="pagination">

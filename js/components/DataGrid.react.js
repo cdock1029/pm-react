@@ -19,6 +19,7 @@ var DataGrid = React.createClass({
         this.props.store.removeChangeListener(this._onChange);
     },
     _onChange: function() {
+        console.log("_onChange in DataGrid called");
         this.setState(this.getState());
     },
     getState: function() {
@@ -27,11 +28,12 @@ var DataGrid = React.createClass({
     render: function () {
         var dataColumns = this.props.store.getDataColumns();
         var heading = this.props.store.getTableHeading();
-        var numberOfPages = Math.ceil(this.state.count / app.COUNT_PER_PAGE);
+        var numberOfPages = Math.ceil(this.state.count / this.state.countPerPage);
+        console.log('count: ' + this.state.count + ', numberOfPages: ' + numberOfPages + ', pageNumber: ' + this.state.pageNumber);
         return (
             <div>
                 <DataTable data={this.state.page} dataColumns={dataColumns} actions={this.props.actions} tableHeading={heading} sortColumn={this.state.sortColumn} sortDirection={this.state.sortDirection} form={this.props.form} />
-                <Pagination numberOfPages={numberOfPages} currentPage={this.state.pageNumber} />
+                <Pagination numberOfPages={numberOfPages} currentPage={this.state.pageNumber} action={this.props.actions.paginationTransition}/>
             </div>
         );
     }

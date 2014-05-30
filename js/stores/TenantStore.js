@@ -14,6 +14,7 @@ var DEFAULT_STATE = {
     sortDirection: PMConstants.ASCENDING,
     pageNumber: 1,
     count: -1,
+    countPerPage: 5,
     page: []
 };
 
@@ -34,6 +35,10 @@ var setSortColumn = function(column) {
     } else {
         updatePageState({ sortDirection: PMConstants.ASCENDING, pageNumber: 1, sortColumn: column });
     }
+};
+
+var setPageNumber = function(pageNumber) {
+    updatePageState({ pageNumber: pageNumber });
 };
 
 var fetchPageData = function(shouldGetCount, cb) {
@@ -93,10 +98,7 @@ var createTenant = function(payload, cb) {
 };
 
 var TenantStore = merge(EventEmitter.prototype, {
-    emitChange: function () {
-        console.log('emitting change..');
-        this.emit(CHANGE_EVENT);
-    },
+
     getPageState: function() {
         console.log('TenantStore.getPageState');
         return pageState;
@@ -114,7 +116,10 @@ var TenantStore = merge(EventEmitter.prototype, {
         return HEADING;
     },
     reloadData: function() {
-        fetchPageData(true, this.emitChange);
+        fetchPageData(true, TenantStore.emitChange);
+    },
+    emitChange: function () {
+        TenantStore.emit(CHANGE_EVENT);
     }
 });
 
@@ -123,13 +128,20 @@ AppDispatcher.register(function(payload) {
 
     switch(action.actionType) {
         case PMConstants.CREATE:
-            createTenant(payload, TenantStore.emitChange);
+            createTenant(action, TenantStore.emitChange);
             break;
         case PMConstants.SORT:
             console.log('Dispatch action type SORT');
-            setSortColumn(payload.column);
+            setSortColumn(action.column);
             fetchPageData(true, TenantStore.emitChange);
             break;
+        case PMConstants.TRANSITION:
+            console.log('transition between data page');
+            setPageNumber(action.pageNumber);
+            fetchPageData(false, TenantStore.emitChange);
+            break;
+        default:
+            return true;
     }
 });
 

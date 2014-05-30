@@ -8,6 +8,12 @@ var TenantActions = {
             actionType: PMConstants.SORT,
             column: column
         });
+    },
+    paginationTransition: function(pageNumber) {
+        AppDispatcher.handleViewAction({
+            actionType: PMConstants.TRANSITION,
+            pageNumber: pageNumber
+        });
     }
 };
 
