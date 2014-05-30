@@ -1,21 +1,12 @@
-
 var AppDispatcher =  require('../dispatcher/AppDispatcher');
 var PMConstants = require('../constants/PMConstants');
+var DataTableActions = require('./DataTableActions');
 
-var TenantActions = {
-    sortColumn: function(column) {
-        AppDispatcher.handleViewAction({
-            actionType: PMConstants.SORT,
-            column: column
-        });
-    },
-    paginationTransition: function(pageNumber) {
-        AppDispatcher.handleViewAction({
-            actionType: PMConstants.TRANSITION,
-            pageNumber: pageNumber
-        });
-    }
-};
+var merge = require('react/lib/merge');
+
+var TenantActions = merge(DataTableActions, {
+
+});
 
 
 module.exports = TenantActions;

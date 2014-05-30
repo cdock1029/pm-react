@@ -17,3 +17,7 @@ th {
 .pagination > li > .glyphicon {
     top: 0px;
 }
+
+.form-group > label {
+    font-size: 14px !important;
+}
