@@ -4,6 +4,7 @@ var Modal = require('./Modal.react');
 
 var ModalTrigger = React.createClass({
     handleClick: function(e) {
+        console.log("ModalTrigger handleClick modal()");
         $(this.refs.payload.getDOMNode()).modal();
     },
     render: function() {

@@ -3,22 +3,26 @@ var EventEmitter = require('events').EventEmitter;
 var PMConstants = require('../constants/PMConstants');
 var merge = require('react/lib/merge');
 
-var CHANGE_EVENT = 'change';
 var MODEL = 'Tenant';
 var HEADING = 'Tenants';
 
-var COUNT_PER_PAGE = 5;
+var DEFAULT_COUNT_PER_PAGE = 5;
 
 var DEFAULT_STATE = {
     sortColumn: 'id',
     sortDirection: PMConstants.ASCENDING,
     pageNumber: 1,
     count: -1,
-    countPerPage: 5,
-    page: []
+    countPerPage: DEFAULT_COUNT_PER_PAGE,
+    page: [],
+    isLoading: true
 };
 
 var pageState = DEFAULT_STATE;
+
+var setIsLoading = function(isLoading) {
+    updatePageState({ isLoading: isLoading });
+};
 
 var getCountPromise = function() {
     var query = new Parse.Query(MODEL);
@@ -42,16 +46,19 @@ var setPageNumber = function(pageNumber) {
 };
 
 var fetchPageData = function(shouldGetCount, cb) {
+    console.log("TenantStore: fetchPageData");
+    setIsLoading(true);
+    cb(); //forcing component update TODO? :/
     var Model = Parse.Object.extend(MODEL);
     var countPromise;
     if (shouldGetCount) {
         countPromise = getCountPromise();
     }
 
-    var start = (pageState.pageNumber - 1) * COUNT_PER_PAGE;
+    var start = (pageState.pageNumber - 1) * pageState.countPerPage;
 
     var query = new Parse.Query(Model);
-    query.limit(COUNT_PER_PAGE);
+    query.limit(pageState.countPerPage);
     query.skip(start);
 
     if (pageState.sortDirection) {
@@ -66,7 +73,7 @@ var fetchPageData = function(shouldGetCount, cb) {
         promise = query.find();
     }
     promise.then(function(page, count) {
-        var pageState = {};
+        var pageState = { isLoading: false };
         if (count) {
             pageState['count'] = count;
         }
@@ -76,20 +83,18 @@ var fetchPageData = function(shouldGetCount, cb) {
     });
 };
 
-var createTenant = function(payload, cb) {
+var createTenant = function(entity, cb) {
     var Tenant = Parse.Object.extend(MODEL);
     var tenant = new Tenant();
 
-    tenant.set('name', payload.name);
-    tenant.set('phone', payload.phone);
-    tenant.set('email', payload.email);
-    tenant.set('balance', payload.balance);
+    tenant.set('name', entity.name);
+    tenant.set('phone', entity.phone);
+    tenant.set('email', entity.email);
+    tenant.set('balance', parseInt(entity.balance));
 
     tenant.save(null, {
         success: function (tenant) {
-            //TODO clean this up
-            updatePageState(DEFAULT_STATE);
-            fetchPageData(true, cb);
+            cb();
         },
         error: function (tenant, error) {
             alert('Failed to save tenant. ' + error.description);
@@ -106,20 +111,20 @@ var TenantStore = merge(EventEmitter.prototype, {
     getDataColumns: function() {
         return ['name', 'phone', 'email', 'balance'];
     },
-    addChangeListener: function(callback) {
-        this.on(CHANGE_EVENT, callback);
+    addChangeListener: function(eventType, callback) {
+        this.on(eventType, callback);
     },
-    removeChangeListener: function(callback) {
-        this.removeListener(CHANGE_EVENT, callback);
+    removeChangeListener: function(eventType, callback) {
+        this.removeListener(eventType, callback);
     },
     getTableHeading: function() {
         return HEADING;
     },
     reloadData: function() {
-        fetchPageData(true, TenantStore.emitChange);
+        fetchPageData(true, TenantStore.emitChange.bind(null, PMConstants.CHANGE));
     },
-    emitChange: function () {
-        TenantStore.emit(CHANGE_EVENT);
+    emitChange: function (eventType) {
+        TenantStore.emit(eventType);
     }
 });
 
@@ -128,17 +133,17 @@ AppDispatcher.register(function(payload) {
 
     switch(action.actionType) {
         case PMConstants.CREATE:
-            createTenant(action, TenantStore.emitChange);
+            createTenant(action.entity, TenantStore.emitChange.bind(null, PMConstants.CREATE));
             break;
         case PMConstants.SORT:
             console.log('Dispatch action type SORT');
             setSortColumn(action.column);
-            fetchPageData(true, TenantStore.emitChange);
+            fetchPageData(true, TenantStore.emitChange.bind(null, PMConstants.CHANGE));
             break;
         case PMConstants.TRANSITION:
             console.log('transition between data page');
             setPageNumber(action.pageNumber);
-            fetchPageData(false, TenantStore.emitChange);
+            fetchPageData(false, TenantStore.emitChange.bind(null, PMConstants.CHANGE));
             break;
         default:
             return true;

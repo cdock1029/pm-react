@@ -7,22 +7,18 @@ var Router = Backbone.Router.extend({
         'buildings' : 'buildings',
         'tenants' : 'tenants'
     },
-    buildings : function () {
+    buildings: function() {
         this.current = 'buildings';
     },
-    tenants : function () {
+    tenants : function() {
         this.current = 'tenants';
     }
 });
 
-var router = new Router();
-
 var React = require('react');
 var PMApp = require('./components/PMApp.react');
+var router = new Router();
 
-React.renderComponent(
-    <PMApp router={router}  />,
-    document.getElementById('pm-app')
-);
+React.renderComponent(<PMApp router={router} />, document.getElementById('pm-app'));
 
 Backbone.history.start();

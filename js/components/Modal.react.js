@@ -5,7 +5,8 @@ var Modal = React.createClass({
     componentDidMount: function() {
         // Initialize the modal, once we have the DOM node
         // TODO: Pass these in via props
-        $(this.getDOMNode()).modal({background: true, keyboard: true, show: false});
+        //console.log("Modal componentDidMount modal(..)");
+        //$(this.getDOMNode()).modal({background: true, keyboard: true, show: false});
     },
     componentWillUnmount: function() {
         $(this.getDOMNode()).off('hidden');

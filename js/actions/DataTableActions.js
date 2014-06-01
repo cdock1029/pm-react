@@ -13,8 +13,13 @@ var DataTableActions = {
             actionType: PMConstants.TRANSITION,
             pageNumber: pageNumber
         });
+    },
+    create: function(entity) {
+        AppDispatcher.handleViewAction({
+            actionType: PMConstants.CREATE,
+            entity: entity
+        });
     }
-
 };
 
 module.exports = DataTableActions;

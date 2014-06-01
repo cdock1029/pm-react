@@ -4,6 +4,7 @@ var Header = require('./Header.react');
 var DataGrid = require('./DataGrid.react');
 var NewTenantForm = require('./NewTenantForm.react');
 var NewBuildingForm = require('./NewBuildingForm.react');
+var PMConstants = require('../constants/PMConstants');
 
 var TenantActions = require('../actions/TenantActions');
 var TenantStore = require('../stores/TenantStore');
@@ -12,46 +13,49 @@ var TenantStore = require('../stores/TenantStore');
  * Renders appropriate components on page based on route.
  */
 var PMApp = React.createClass({
-    componentWillMount: function () {
-        this.callback = (function () {
-            console.log("router on route");
+    componentWillMount : function() {
+        this.callback = (function() {
             this.forceUpdate();
-        }.bind(this));
-        this.props.router.on('route', this.callback)
+        }).bind(this);
+
+        this.props.router.on("route", this.callback);
+    },
+    componentDidMount: function() {
+        TenantStore.addChangeListener(PMConstants.CREATE, this.callback);
     },
     componentWillUnmount: function () {
-        this.callback = (function () {
-            console.log("router off route");
-            this.forceUpdate();
-        }.bind(this));
-        this.props.router.off('route', this.callback);
+        TenantStore.removeChangeListener(PMConstants.CREATE, this.callback);
+        this.props.router.off("route", this.callback);
     },
     render: function () {
+        console.log("rendering PMApp");
         var app;
         switch(this.props.router.current) {
-            /*
             case 'buildings':
-                app = (
-                    <div>
-                        <Header />
-                        <DataGrid modelType={'Building'} dataColumns={['name', 'address', 'city', 'state', 'zip']} form={<NewBuildingForm />}/>
-                    </div>
-                );
-                break;*/
+                console.log("route is buildings");
+                app = <h2>building placeholder</h2>;
+                break;
             case 'tenants':
+                console.log("route is tenants");
                 app = (
                     <div>
                         <Header />
-                        <DataGrid actions={TenantActions} store={TenantStore} form={<NewTenantForm />} />
+                        <DataGrid actions={TenantActions} createAction={this._createNewTenant} store={TenantStore} form={<NewTenantForm ref="tenantForm" />} />
                     </div>
                 );
                 break;
             default:
-                //TODO do this the right way, not sure
                 app = <h1>404 Not Found</h1>;
                 break;
         }
         return app;
+    },
+    _createNewTenant: function() {
+        var tenant = this.refs.tenantForm.getFormData();
+        TenantActions.create(tenant);
+    },
+    _creationSuccessful: function() {
+
     }
 });
 

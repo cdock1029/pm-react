@@ -21,3 +21,19 @@ th {
 .form-group > label {
     font-size: 14px !important;
 }
+
+.count-per-page {
+    padding-top: 36px;
+    padding-right: 5px;
+}
+
+.overlay {
+    /*display:none;*/
+    position:absolute;
+    background:#fff;
+    opacity: 0.8;
+}
+
+.img-load {
+    position: absolute;
+}
