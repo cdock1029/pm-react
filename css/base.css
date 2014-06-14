@@ -22,11 +22,6 @@ th {
     font-size: 14px !important;
 }
 
-.count-per-page {
-    padding-top: 36px;
-    padding-right: 5px;
-}
-
 .overlay {
     /*display:none;*/
     position:absolute;
@@ -36,4 +31,5 @@ th {
 
 .img-load {
     position: absolute;
+    max-height: 100%;
 }

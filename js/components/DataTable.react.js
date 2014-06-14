@@ -3,6 +3,7 @@ var React = require('react');
 var ModalTrigger = require('./ModalTrigger.react');
 var DataRow = require('./DataRow.react');
 var LoadingSpinner = require('./LoadingSpinner.react');
+var LoadingBar = require('./LoadingBar.react');
 
 /**
  * All Data rows, and table header/title
@@ -82,31 +83,39 @@ var DataTable = React.createClass({
             }
             headers.push(<th onClick={this._onTableHeaderClick.bind(null, column)} key={column}>{app.Utils.capitalize(column)}<small>{sortLabel}</small></th>);
         }.bind(this));
+        var heading = this.props.tableHeading;
 
         var newTenantButton = <button type="button" className="btn btn-default btn-xs"><span className="glyphicon glyphicon-plus"></span>  New</button>;
-        var modalHeader = <div className="modal-header"><button type="button" className="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 className="modal-title" id="myModalLabel">Modal title</h4></div>;
-        var modalFooter = <div className="modal-footer">
-            <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="button" className="btn btn-primary" onClick={this._onCreateClick}>Create</button>
-        </div>;
+        var modalHeader = <div className="modal-header"><button type="button" className="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 className="modal-title">Create new {this.props.tableHeading}</h4></div>;
         var modalBody = <div className="modal-body">{this.props.form}</div>;
-
-        var spinner;
+        var modalFooter = (
+            <div className="modal-footer">
+                <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" className="btn btn-primary" onClick={this._onCreateClick}>Create</button>
+            </div>
+        );
+        var spinner, loadingBar;
         if (this.props.isLoading) {
             console.log("check if loading: true");
             spinner = <LoadingSpinner location={this.state} />;
+            loadingBar = <LoadingBar />;
         } else {
             console.log("check if loading: false");
             spinner = <noscript />;
+            loadingBar = <noscript />;
         }
         return (
             <div className="data-table">
-                <div className="clearfix">
-                <h2 className="pull-left">{app.Utils.capitalize(this.props.tableHeading)}&nbsp;
-                    <ModalTrigger trigger={newTenantButton} header={modalHeader} body={modalBody} footer={modalFooter}/>
-                </h2>
-                <div className="pull-right count-per-page">5 10 15</div>
-                </div>
+                <ul className="list-inline">
+                    <li><h2>{app.Utils.capitalize(this.props.tableHeading)}&nbsp;</h2></li>
+                    <li><ModalTrigger trigger={newTenantButton} header={modalHeader} body={modalBody} footer={modalFooter}/></li>
+                    <li><select className="form-control">
+                        <option>5</option>
+                        <option>10</option>
+                        <option>15</option>
+                    </select></li>
+                    <li>{loadingBar}</li>
+                </ul>
                 <table className="table table-hover table-bordered table-condensed">
                     <thead>
                         <tr>

@@ -8,47 +8,33 @@ var PMConstants = require('../constants/PMConstants');
 
 var TenantActions = require('../actions/TenantActions');
 var TenantStore = require('../stores/TenantStore');
+var TENANT = 'Tenant';
 
 /**
  * Renders appropriate components on page based on route.
  */
-var PMApp = React.createClass({
-    componentWillMount : function() {
-        this.callback = (function() {
-            this.forceUpdate();
-        }).bind(this);
-
-        this.props.router.on("route", this.callback);
+var PMTenantPage = React.createClass({
+    _update: function() {
+        this.forceUpdate();
     },
     componentDidMount: function() {
-        TenantStore.addChangeListener(PMConstants.CREATE, this.callback);
+        TenantStore.addChangeListener(PMConstants.CREATE + TENANT, this._update);
     },
     componentWillUnmount: function () {
-        TenantStore.removeChangeListener(PMConstants.CREATE, this.callback);
-        this.props.router.off("route", this.callback);
+        TenantStore.removeChangeListener(PMConstants.CREATE + TENANT, this._update);
     },
     render: function () {
-        console.log("rendering PMApp");
-        var app;
-        switch(this.props.router.current) {
-            case 'buildings':
-                console.log("route is buildings");
-                app = <h2>building placeholder</h2>;
-                break;
-            case 'tenants':
-                console.log("route is tenants");
-                app = (
-                    <div>
+        console.log("rendering PMTenantPage");
+        var model = this.props.model;
+        switch (model) {
+            default:
+                return (
+                    <div className="container">
                         <Header />
                         <DataGrid actions={TenantActions} createAction={this._createNewTenant} store={TenantStore} form={<NewTenantForm ref="tenantForm" />} />
                     </div>
                 );
-                break;
-            default:
-                app = <h1>404 Not Found</h1>;
-                break;
         }
-        return app;
     },
     _createNewTenant: function() {
         var tenant = this.refs.tenantForm.getFormData();
@@ -59,4 +45,4 @@ var PMApp = React.createClass({
     }
 });
 
-module.exports = PMApp;
+module.exports = PMTenantPage;

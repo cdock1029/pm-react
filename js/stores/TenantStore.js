@@ -33,6 +33,10 @@ var updatePageState = function(updates) {
     pageState = merge(pageState, updates);
 };
 
+var setCountPerPage = function(countPerPage) {
+    updatePageState({ countPerPage: countPerPage });
+};
+
 var setSortColumn = function(column) {
     if (pageState.sortColumn === column) {
         updatePageState({ sortDirection: ! pageState.sortDirection, pageNumber: 1 });
@@ -144,6 +148,10 @@ AppDispatcher.register(function(payload) {
             console.log('transition between data page');
             setPageNumber(action.pageNumber);
             fetchPageData(false, TenantStore.emitChange.bind(null, PMConstants.CHANGE));
+            break;
+        case PMConstants.CHANGE_PAGE_COUNT:
+            setCountPerPage(action.countPerPage);
+            fetchPageData(true, TenantStore.emitChange.bind(null, PMConstants.CHANGE));
             break;
         default:
             return true;

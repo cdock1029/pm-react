@@ -1,24 +1,39 @@
 /** @jsx React.DOM */
 /**
- * Backbone Router
+ * Parse Router
  */
-var Router = Backbone.Router.extend({
-    routes: {
-        'buildings' : 'buildings',
-        'tenants' : 'tenants'
-    },
-    buildings: function() {
-        this.current = 'buildings';
-    },
-    tenants : function() {
-        this.current = 'tenants';
-    }
-});
+(function(){
+    "use strict";
+    var React = require('react');
 
-var React = require('react');
-var PMApp = require('./components/PMApp.react');
-var router = new Router();
+    //Page components
+    var PMTenantPage = require('./components/PMTenantPage.react');
 
-React.renderComponent(<PMApp router={router} />, document.getElementById('pm-app'));
+    var currentView = null;
+    var rootNode = document.body;
+    var setView = function(view) {
+        if (currentView) {
+            React.unmountComponentAtNode(rootNode);
+        }
+        currentView = view;
+        React.renderComponent(currentView, rootNode);
+    };
 
-Backbone.history.start();
+    var Router = Parse.Router.extend({
+        initialize: function() {
+            Parse.history.start();
+        },
+        routes: {
+            'buildings' : 'buildings',
+            'tenants' : 'tenants'
+        },
+        buildings: function() {
+            setView(<div className="container"><h2>building placeholder</h2></div>);
+        },
+        tenants : function() {
+            setView(<PMTenantPage />);
+        }
+    });
+    new Router;
+})();
+

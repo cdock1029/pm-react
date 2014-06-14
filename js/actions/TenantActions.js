@@ -4,9 +4,8 @@ var DataTableActions = require('./DataTableActions');
 
 var merge = require('react/lib/merge');
 
-var TenantActions = merge(DataTableActions, {
+var TenantActions = merge(DataTableActions.prototype, {
 
 });
-
 
 module.exports = TenantActions;

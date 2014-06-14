@@ -16,16 +16,13 @@ var Modal = React.createClass({
         e.stopPropagation();
     },
     render: function() {
-        var Header = this.props.header;
-        var Body = this.props.body;
-        var Footer = this.props.footer;
         return (
             <div onClick={this.handleClick} className="modal fade" role="dialog" aria-hidden="true">
                 <div className="modal-dialog">
                     <div className="modal-content">
-                        {Header}
-                        {Body}
-                        {Footer}
+                        {this.props.header}
+                        {this.props.body}
+                        {this.props.footer}
                     </div>
                 </div>
             </div>
