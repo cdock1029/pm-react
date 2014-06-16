@@ -9,7 +9,7 @@ var LoadingSpinner = React.createClass({
         console.log("rendering LoadingSpinner ON");
         return (
             <div className="overlay" style={{top: location.top, width: location.outerWidth, height: location.outerHeight}}>
-            <img className="img-load" src="../public/loading.gif" alt="Loading..." style={{top: top, left: left}} />
+            <img className="img-load" src="../public/load-circles.gif" alt="Loading..." style={{top: top, left: left}} />
             </div>
         );
    }

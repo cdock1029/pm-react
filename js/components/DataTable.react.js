@@ -1,5 +1,6 @@
 /** @jsx React.DOM */
 var React = require('react');
+var PMConstants = require('../constants/PMConstants');
 var ModalTrigger = require('./ModalTrigger.react');
 var DataRow = require('./DataRow.react');
 var LoadingSpinner = require('./LoadingSpinner.react');
@@ -59,17 +60,32 @@ var DataTable = React.createClass({
             console.log("NO update necessary");
         }
     },
+    _onDataRowClick: function(id) {
+        this.props.actions.showSubNav(PMConstants.LOAD_AND_SHOW_DETAILS, id);
+    },
     render: function() {
         var headers = [];
         var rows = [];
         var dataColumns = this.props.dataColumns;
-        this.props.data.forEach(function(row) {
-            var tableRow = { id: row.id };
+        for (var id in this.props.page) {
+            if (! this.props.page.hasOwnProperty(id)) {
+                continue;
+            }
+            var tableRow = { id: id };
+            var entity = this.props.page[id];
             dataColumns.forEach(function(column) {
-                tableRow[column] = row.attributes[column];
+                tableRow[column] = entity.attributes[column];
             });
-            rows.push(<DataRow row={tableRow} key={tableRow.id} />);
-        });
+            rows.push(<DataRow row={tableRow} key={id} route={this.props.tableHeading} action={this._onDataRowClick.bind(null, id)} />);
+        }
+
+//        this.props.page.forEach(function(row) {
+//            var tableRow = { id: row.id };
+//            dataColumns.forEach(function(column) {
+//                tableRow[column] = row.attributes[column];
+//            });
+//            rows.push(<DataRow row={tableRow} key={tableRow.id} route={this.props.tableHeading} />);
+//        }.bind(this));
         dataColumns.forEach(function (column) {
             var sortLabel;
             if (column === this.props.sortColumn) {
@@ -81,17 +97,16 @@ var DataTable = React.createClass({
                     sortLabel = ' \u25BC';
                 }
             }
-            headers.push(<th onClick={this._onTableHeaderClick.bind(null, column)} key={column}>{app.Utils.capitalize(column)}<small>{sortLabel}</small></th>);
+            headers.push(<th onClick={this._onTableHeaderClick.bind(null, column)} key={column}>{app.Utils.capitalizeFirstLetter(column)}<small>{sortLabel}</small></th>);
         }.bind(this));
-        var heading = this.props.tableHeading;
 
-        var newTenantButton = <button type="button" className="btn btn-default btn-xs"><span className="glyphicon glyphicon-plus"></span>  New</button>;
+        var newEntityButton = <button type="button" className="btn btn-default btn-xs"><span className="glyphicon glyphicon-plus"></span>  New</button>;
         var modalHeader = <div className="modal-header"><button type="button" className="close" data-dismiss="modal" aria-hidden="true">&times;</button><h4 className="modal-title">Create new {this.props.tableHeading}</h4></div>;
         var modalBody = <div className="modal-body">{this.props.form}</div>;
         var modalFooter = (
             <div className="modal-footer">
                 <button type="button" className="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" className="btn btn-primary" onClick={this._onCreateClick}>Create</button>
+                <button type="button" className="btn btn-primary" data-dismiss="modal" onClick={this._onCreateClick}>Create</button>
             </div>
         );
         var spinner, loadingBar;
@@ -107,9 +122,9 @@ var DataTable = React.createClass({
         return (
             <div className="data-table">
                 <ul className="list-inline">
-                    <li><h2>{app.Utils.capitalize(this.props.tableHeading)}&nbsp;</h2></li>
-                    <li><ModalTrigger trigger={newTenantButton} header={modalHeader} body={modalBody} footer={modalFooter}/></li>
-                    <li><select className="form-control">
+                    <li><h2>{app.Utils.capitalizeFirstLetter(this.props.tableHeading)}&nbsp;</h2></li>
+                    <li><ModalTrigger trigger={newEntityButton} header={modalHeader} body={modalBody} footer={modalFooter}/></li>
+                    <li><select className="form-control input-sm">
                         <option>5</option>
                         <option>10</option>
                         <option>15</option>

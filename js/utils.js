@@ -3,8 +3,8 @@ var app = app || {};
     Parse.initialize(app.Parse.applicationId, app.Parse.javaScriptKey);
 
 	app.Utils = {
-        capitalize: function (str) {
-            return str.charAt(0).toUpperCase() + str.slice(1);
+        capitalizeFirstLetter: function (str) {
+            return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
         }
     };
 

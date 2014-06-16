@@ -15,16 +15,16 @@ var DataGrid = React.createClass({
         return this.getState();
     },
     componentDidMount: function () {
-        console.log("componentDidMount");
+        console.log("DataGrid componentDidMount");
         this.props.store.reloadData();
-        this.props.store.addChangeListener(PMConstants.CHANGE, this._onChange);
+        this.props.store.addChangeListener(PMConstants.CHANGE + this.props.entityType, this._onChange);
     },
     componentWillUnmount: function() {
-        console.log("componentWillUnmount");
-        this.props.store.removeChangeListener(PMConstants.CHANGE, this._onChange);
+        console.log("DataGrid componentWillUnmount");
+        this.props.store.removeChangeListener(PMConstants.CHANGE + this.props.entityType, this._onChange);
     },
     _onChange: function() {
-        console.log("_onChange");
+        console.log("DataGrid _onChange");
         this.refs.dataTable.measureTableBody();
         this.setState(this.getState());
     },
@@ -32,17 +32,19 @@ var DataGrid = React.createClass({
         return this.props.store.getPageState();
     },
     render: function () {
-        console.log("rendering DataGrid");
         var dataColumns = this.props.store.getDataColumns();
         var heading = this.props.store.getTableHeading();
         var numberOfPages = Math.ceil(this.state.count / this.state.countPerPage);
         console.log('DataGrid.render count: ' + this.state.count + ', numberOfPages: ' + numberOfPages + ', pageNumber: ' + this.state.pageNumber);
         return (
             <div>
-                <DataTable ref="dataTable" data={this.state.page} dataColumns={dataColumns} actions={this.props.actions} createAction={this.props.createAction} tableHeading={heading} sortColumn={this.state.sortColumn} sortDirection={this.state.sortDirection} form={this.props.form} isLoading={this.state.isLoading} />
-                <Pagination numberOfPages={numberOfPages} currentPage={this.state.pageNumber} action={this.props.actions.paginationTransition}/>
+                <DataTable ref="dataTable" page={this.state.page} dataColumns={dataColumns} actions={this.props.actions} createAction={this.props.createAction} tableHeading={heading} sortColumn={this.state.sortColumn} sortDirection={this.state.sortDirection} form={this.props.form} isLoading={this.state.isLoading}  />
+                <Pagination numberOfPages={numberOfPages} currentPage={this.state.pageNumber} action={this._makePageTransition}/>
             </div>
         );
+    },
+    _makePageTransition: function (pageNumber) {
+        this.props.actions.paginationTransition(pageNumber);
     }
 });
 

@@ -6,8 +6,8 @@ var React = require('react');
  * Defines a specific pagination button, one of: Next, previous, and numbered page.
  */
 var PageButton = React.createClass({
-    _onClick: function(pageNumber) {
-        this.props.action(pageNumber);
+    _onClick: function() {
+        this.props.action();
     },
     render: function () {
         var pageButton;
@@ -15,7 +15,7 @@ var PageButton = React.createClass({
         if (this.props.iconClasses) {
             if (this.props.shouldHaveLink) {
                 //Enabled
-                pageButton = <li><span className={this.props.iconClasses} onClick={this._onClick.bind(null, this.props.pageNumber)}></span></li>;
+                pageButton = <li><span className={this.props.iconClasses} onClick={this._onClick}></span></li>;
             } else {
                 //Disabled
                 pageButton = <li className="disabled"><span className={this.props.iconClasses}></span></li>;
@@ -24,7 +24,7 @@ var PageButton = React.createClass({
             //Number Buttons
             if (this.props.shouldHaveLink) {
                 //different page than Current
-                pageButton = <li><span onClick={this._onClick.bind(null, this.props.pageNumber)}>{this.props.label}</span></li>;
+                pageButton = <li><span onClick={this._onClick}>{this.props.label}</span></li>;
             } else {
                 //current page button
                 pageButton = <li className="active"><span>{this.props.label}</span></li>;

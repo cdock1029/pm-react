@@ -14,22 +14,22 @@ var Pagination = React.createClass({
                 //don't add the callback to "current page" button. We're on it already
                 button = <PageButton pageNumber={i} label={i} key={i} action={this.props.action} />;
             } else {
-                button = <PageButton pageNumber={i} label={i} shouldHaveLink={true} key={i} action={this.props.action} />;
+                button = <PageButton pageNumber={i} label={i} shouldHaveLink={true} key={i} action={this._executeAction.bind(null, i)} />;
             }
             pageNumberButtons.push(button);
         }
         var nextButton, previousButton;
         //We're on the LAST page, disable "next"
         if (this.props.currentPage === this.props.numberOfPages) {
-            nextButton = <PageButton iconClasses={'glyphicon glyphicon-chevron-right'} action={this.props.action} />;
+            nextButton = <PageButton iconClasses={'glyphicon glyphicon-chevron-right'} />;
         } else {
-            nextButton = <PageButton iconClasses={'glyphicon glyphicon-chevron-right'} shouldHaveLink={true} pageNumber={this.props.currentPage + 1} action={this.props.action} />;
+            nextButton = <PageButton iconClasses={'glyphicon glyphicon-chevron-right'} shouldHaveLink={true} action={this._executeAction.bind(null, this.props.currentPage + 1)} />;
         }
         //We're on the FIRST page, disable "previous"
         if (this.props.currentPage === 1) {
             previousButton = <PageButton iconClasses={'glyphicon glyphicon-chevron-left'} />;
         } else {
-            previousButton = <PageButton iconClasses={'glyphicon glyphicon-chevron-left'} shouldHaveLink={true} pageNumber={this.props.currentPage - 1} action={this.props.action}/>;
+            previousButton = <PageButton iconClasses={'glyphicon glyphicon-chevron-left'} shouldHaveLink={true} action={this._executeAction.bind(null, this.props.currentPage - 1)}/>;
         }
         return (
             <ul className="pagination">
@@ -38,6 +38,9 @@ var Pagination = React.createClass({
                 {nextButton}
             </ul>
         );
+    },
+    _executeAction: function(pageNumber) {
+        this.props.action(pageNumber);
     }
 });
 
