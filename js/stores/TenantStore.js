@@ -40,9 +40,11 @@ var loadLeases = function(id, cb) {
             console.log('leaseIds not null');
             var Lease = Parse.Object.extend('Lease');
             var query = new Parse.Query(Lease);
+            query.include(['apartment.building']);
             query.containedIn('objectId', leaseIds);
             query.find({
                 success: function(leases) {
+                    console.log('finding leases succesful');
                     detailsState = merge(detailsState, { leases: leases});
                     cb();
                 },
@@ -135,24 +137,24 @@ var fetchPageData = function(shouldGetCount, cb) {
         cb();
     });
 /*
-    var q = new Parse.Query('Lease');
-    q.get('uCNjxBocRb', {
+    var q = new Parse.Query('Apartment');
+    q.get('UacX4puMBn', {
         success:function(l) {
-            var Tenant = Parse.Object.extend('Apartment');
-            var tenant = new Tenant();
-            tenant.id = 'UacX4puMBn';
-            l.set('apartment', tenant);
+            var Pointer = Parse.Object.extend('Building');
+            var pointer = new Pointer();
+            pointer.id = 'geHToiVhnj';
+            l.set('building', pointer);
             l.save(null, {
                 success: function(l) {
-                    alert('success saving tenant in lease');
+                    alert('success saving pointer in model');
                 },
                 error: function(object, error) {
-                    alert('error saving lease');
+                    alert('error saving pointer');
                 }
             });
         },
         error: function(object, error) {
-            alert('error getting george');
+            alert('error getting base model');
         }
     });*/
 

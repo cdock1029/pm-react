@@ -5,7 +5,7 @@
 (function(){
     "use strict";
     var React = require('react');
-
+    window.React = React;
     //Page components
     var PMTenantPage = require('./components/PMTenantPage.react');
     var PMBuildingsPage = require('./components/PMBuildingsPage.react');

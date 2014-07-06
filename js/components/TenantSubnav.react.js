@@ -1,6 +1,7 @@
 /** @jsx React.DOM */
 var React = require('react');
 var PMConstants = require('../constants/PMConstants');
+var Lease = require('./Lease.react');
 
 var TenantSubnav = React.createClass({
 
@@ -27,9 +28,9 @@ var TenantSubnav = React.createClass({
             case 'leases':
                 var leases = this.props.data.leases;
                 var lis = [];
-                for (var i = 0; i < leases.length; i++) {
-                    lis.push(<li key={i}>{leases[i].id}</li>);
-                }
+                leases.map(function(lease, index) {
+                    lis.push(<Lease lease={lease} key={index} />);
+                });
                 content = (
                     <div>
                     <h2>leases</h2>

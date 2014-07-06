@@ -18,7 +18,6 @@ var Header = React.createClass({
                     </div>
                     <div className="collapse navbar-collapse">
                         <ul className="nav navbar-nav">
-                            <li><a href="#">Home</a></li>
                             <li className={this.props.active == 'Buildings' ? 'active' : ''}><a href="#/buildings">Buildings</a></li>
                             <li className={this.props.active == 'Apartments' ? 'active' : ''}><a href="#">Apartments</a></li>
                             <li className={this.props.active == 'Tenants' ? 'active' : ''}><a href="#/tenants">Tenants</a></li>
